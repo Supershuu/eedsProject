@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/widgets.css" />
+    <link
+      rel="stylesheet"
+      href="./node_modules/element-ui/lib/theme-chalk/index.css"
+    />
+    <style>
+      .el-input__inner {
+        background-color: #102d46;
+        color: #fff;
+      }
+      .player {
+        height: 1000px;
+        width: 1550px;
+        display: flex;
+        flex-direction: column;
+      }
+      #aPlayer {
+        flex: 0 0 auto;
+        width: 1550px;
+        height: 1000px;
+      }
+      #bPlayer {
+        flex: 0 0 auto;
+        width: 1550px;
+        height: 1000px;
+        margin-top: 10px;
+      }
+      .main {
+        align-items: flex-start;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <div class="main">
+        <!-- 左边列表展示 -->
+        <div class="left">
+          <ul class="infinite-list">
+            <!-- 搜索框 -->
+            <el-input
+              placeholder="请输入要搜索的线路"
+              style="background: #00b1df"
+              v-model="input"
+              size="mini"
+            ></el-input>
+            <!-- 展示 -->
+            <div v-for="i in Newitem">
+              <li class="infinite-list-item">
+                <img src="./img/摄像头.png" alt="" />
+                <el-button
+                  type="text"
+                  @click="getvideo(i)"
+                  style="color: #fff"
+                  v-if="i.status==0 "
+                >
+                  {{ i.deviceName }}
+                </el-button>
+                <el-button type="text" @click="getvideo(i)" v-else>
+                  {{ i.deviceName }}
+                </el-button>
+              </li>
+            </div>
+          </ul>
+        </div>
+
+        <!-- 右侧视频 -->
+        <div class="right" v-show="!only">
+          <span
+            style="
+              font-size: 26px;
+              color: #00b1df;
+              margin-top: 1%;
+              height: 40px;
+            "
+            >请选择循环播放时间</span
+          >
+          <el-button
+            @click="change(60000)"
+            style="height: 40px; margin-top: 1%"
+            :type="primary"
+            >1分钟</el-button
+          >
+          <el-button
+            @click="change(180000)"
+            style="height: 40px; margin-top: 1%"
+            :type="primary1"
+            >3分钟</el-button
+          >
+          <el-button
+            @click="change(300000)"
+            style="height: 40px; margin-top: 1%"
+            :type="primary2"
+            >5分钟</el-button
+          >
+          <el-button
+            @click="change(600000)"
+            style="height: 40px; margin-top: 1%"
+            :type="primary3"
+            >10分钟</el-button
+          >
+          <el-button
+            type="text"
+            style="margin-left: 20%; height: 40px; margin-top: 0.2%"
+            @click="fullscreens"
+          >
+            <img src="./img/返 回.png" alt="" />
+          </el-button>
+          <div class="player">
+            <iframe
+              frameborder="0"
+              scrolling="no"
+              id="aPlayer"
+              src="videoa.html"
+              v-if="bol"
+            ></iframe>
+            <iframe
+              src="videoe.html"
+              frameborder="0"
+              v-for="(item,num) in iList"
+              :key="item"
+              v-if="(!bol)&&item==index"
+              scrolling="no"
+              id="bPlayer"
+            ></iframe>
+            <iframe
+              src="videoy.html"
+              frameborder="0"
+              v-for="(item,num) in yList"
+              :key="item"
+              v-if="(!bol)&&item==index"
+              scrolling="no"
+              id="bPlayer"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="./js/vue.js"></script>
+  <script src="./js/jquery.min.js"></script>
+  <script src="./js/jquery-1.11.1.js"></script>
+  <script src="./js/index.js"></script>
+  <script src="./js/video.js"></script>
+  <script src="./js/EZUIKit-JavaScript/ezuikit.js"></script>
+
+  <script src="./js/jquery-1.12.4.min.js"></script>
+  <script src="./js/jsencrypt.min.js"></script>
+  <script src="./js/jsWebControl-1.0.0.min.js"></script>
+  <script>
+    let electron = require("electron");
+    const { ipcRenderer } = electron;
+    new Vue({
+      el: "#app",
+      data: {
+        only: false,
+        deviceName: [],
+        devices: [],
+        zDevice: [],
+        iList: [],
+        yList: [],
+        n: 0,
+        m: 0,
+        accessToken: "",
+        departID: "",
+        url: "",
+        val: {},
+        oWebControl: null,
+        initCount: 0,
+        pubKey: "",
+        updatetime: 300000,
+        primary: "",
+        primary1: "",
+        primary2: "",
+        primary3: "",
+        input: "",
+        baseURL: "http://www.cqset.com:3100/api",
+        ysUrl: "",
+        bol: false,
+        decoder: {},
+        index: 0,
+      },
+      methods: {
+        fullscreens() {
+          ipcRenderer.send("openindex");
+        },
+        change(val) {
+          this.updatetime = val;
+          this.updetevideo();
+          if (val == 60000) {
+            this.primary = "primary";
+            this.primary1 = "";
+            this.primary2 = "";
+            this.primary3 = "";
+          }
+          if (val == 180000) {
+            this.primary1 = "primary";
+            this.primary = "";
+            this.primary2 = "";
+            this.primary3 = "";
+          }
+          if (val == 300000) {
+            this.primary1 = "";
+            this.primary = "";
+            this.primary3 = "";
+            this.primary2 = "primary";
+          }
+          if (val == 600000) {
+            this.primary3 = "primary";
+            this.primary1 = "";
+            this.primary = "";
+
+            this.primary2 = "";
+          }
+        },
+        gettoken() {
+          let that = this;
+          that.getajax(
+            that.baseURL + "/v2/token/accesstoken-get",
+            {},
+            function (res) {
+              that.accessToken = res.data.accessToken;
+            }
+          );
+        },
+        getajax(url, data, callback) {
+          $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            success: function (res) {
+              callback(res);
+            },
+            dataType: "json",
+          });
+        },
+        getvideo(val) {
+          if (val.status == 0) {
+            this.$message({
+              message: "该设备不在线",
+              type: "warning",
+            });
+          } else {
+            ipcRenderer.send("openvideos", val);
+          }
+        },
+        getdata() {
+          let id = JSON.parse(localStorage.getItem("LoginUser"));
+          this.departID = id.departID;
+          let that = this;
+          that.getajax(
+            "http://www.cqset.com:3100/api/v1/pc/devicelist",
+            {
+              departID: that.departID,
+            },
+            function (res) {
+              that.deviceName = res.data.list;
+              that.tableDatass = res.data.list;
+              let device = [];
+              let zDevice = [];
+              let list = [];
+              let _Data = res.data.list;
+              _Data.map((item, index) => {
+                if (item.deviceSerial.length > 9) {
+                  device.push(item.deviceSerial);
+                } else {
+                  zDevice.push(item.deviceSerial);
+                }
+              });
+              that.devices = device;
+              that.zDevice = zDevice;
+              for (let index = 0; index < zDevice.length / 9; index++) {
+                list.push(index);
+              }
+              for (let index = 0; index < list.length; index++) {
+                if (index % 2 == 0) {
+                  that.yList.push(index);
+                } else {
+                  that.iList.push(index);
+                }
+              }
+              // that.getYsUrl(zDevice);
+              // that.initPlugin();
+              // that.initEzuikit(bPlayer);
+            }
+          );
+        },
+        updetevideo() {
+          let _this = this;
+          let index1 = 0;
+          let isRunning = false;
+          window.localStorage.setItem("res", _this.index);
+          window.localStorage.setItem("rest", _this.updatetime);
+          setInterval(() => {
+            if (!isRunning) {
+              isRunning = true;
+              if (!_this.bol) {
+                var hkTime = setInterval(() => {
+                  _this.index++;
+                  window.localStorage.setItem("res", _this.index);
+                  if (_this.index >= _this.zDevice.length / 9) {
+                    _this.bol = !_this.bol;
+                    _this.index = 0;
+                    index1 = 0;
+                    clearInterval(hkTime);
+                    isRunning = false;
+                  }
+                }, _this.updatetime);
+              } else {
+                var ysTime = setInterval(() => {
+                  index1++;
+                  if (index1 == 8) {
+                    _this.bol = !_this.bol;
+                    index1 = 0;
+                    _this.index = 0;
+                    clearInterval(ysTime);
+                    isRunning = false;
+                  }
+                }, _this.updatetime);
+              }
+            }
+          }, 1000);
+        },
+        getYsUrl(list) {
+          var i;
+          var index = 0;
+          this.ysUrl = "";
+          if (this.m == 0) {
+            i = 0;
+          } else {
+            i = this.m * 9;
+          }
+          for (; i < (this.m + 1) * 9 || index == 8; i++) {
+            index++;
+            if (i == list.length) {
+              i = 0;
+              this.m = 0;
+            }
+            str = "ezopen://open.ys7.com/" + list[i] + "/1.live" + ",";
+            this.ysUrl = this.ysUrl.concat(str);
+          }
+          this.ysUrl = this.ysUrl.substring(0, this.ysUrl.length - 1);
+          this.m++;
+          if (this.m > this.zDevice.length / 9) {
+            this.m = 0;
+            this.bol = !this.bol;
+          }
+        },
+        initEzuikit(id) {
+          let _this = this;
+          this.getajax(
+            "http://www.cqset.com:3100/api/v2/token/accesstoken-get",
+            {},
+            function (res) {
+              _this.accessToken = res.data.accessToken;
+              _this.decoder = new EZUIKit.EZUIPlayer({
+                id: id,
+                autoplay: true,
+                url: _this.ysUrl,
+                accessToken: _this.accessToken,
+                decoderPath: "./js/EZUIKit-JavaScript",
+                width: 1550,
+                height: 1000,
+                splitBasis: 3,
+              });
+            }
+          );
+        },
+        initPlugin() {
+          let _this = this;
+          _this.oWebControl = new WebControl({
+            szPluginContainer: "aPlayer",
+            iServicePortStart: 15900,
+            iServicePortEnd: 15909,
+            szClassId: "23BF3B0A-2C56-4D97-9C03-0CB103AA8F11",
+            cbConnectSuccess: () => {
+              this.oWebControl
+                .JS_StartService("window", {
+                  dllPath: "./VideoPluginConnect.dll",
+                })
+                .then(() => {
+                  this.oWebControl
+                    .JS_CreateWnd("aPlayer", 1550, 1000)
+                    .then(() => {
+                      this.init();
+                    });
+                });
+            },
+            cbConnectError: () => {
+              _this.oWebControl = null;
+              $("#aPlayer").html("插件未启动，正在尝试启动，请稍候...");
+              WebControl.JS_WakeUp("VideoWebPlugin://");
+              _this.initCount++;
+              if (_this.initCount < 3) {
+                setTimeout(function () {
+                  _this.initPlugin();
+                }, 3000);
+              } else {
+                $("#aPlayer").html("插件启动失败，请检查插件是否安装！");
+              }
+            },
+            cbConnectClose: (bNormalClose) => {
+              console.log("cbConnectClose");
+              _this.oWebControl = null;
+            },
+          });
+        },
+        setCallbacks() {
+          this.oWebControl.JS_SetWindowControlCallback({
+            cbIntegrationCallBack: this.cbIntegrationCallBack,
+          });
+        },
+        init() {
+          this.getPubKey(() => {
+            var appkey = "20133873";
+            var secret = this.setEncrypt("x1JOExMuwQBTHDJrrKiM");
+            var ip = "219.151.150.212";
+            var playMode = 0;
+            var port = 2443;
+            var snapDir = "D:\\SnapDir";
+            var videoDir = "D:\\VideoDir";
+            var layout = "3x3";
+            var enableHTTPS = 1;
+            var encryptedFields = "secret";
+            var showToolbar = 1;
+            var showSmart = 1;
+            var buttonIDs =
+              "0,16,256,257,258,259,260,512,513,514,515,516,517,768,769";
+
+            this.oWebControl
+              .JS_RequestInterface({
+                funcName: "init",
+                argument: JSON.stringify({
+                  appkey: appkey,
+                  secret: secret,
+                  ip: ip,
+                  playMode: playMode,
+                  port: port,
+                  snapDir: snapDir,
+                  videoDir: videoDir,
+                  layout: layout,
+                  enableHTTPS: enableHTTPS,
+                  encryptedFields: encryptedFields,
+                  showToolbar: showToolbar,
+                  showSmart: showSmart,
+                }),
+              })
+              .then((oData) => {
+                this.oWebControl.JS_Resize(1550, 1000);
+              });
+          });
+        },
+        getPubKey(callback) {
+          this.oWebControl
+            .JS_RequestInterface({
+              funcName: "getRSAPubKey",
+              argument: JSON.stringify({
+                keyLength: 1024,
+              }),
+            })
+            .then((oData) => {
+              if (oData.responseMsg.data) {
+                this.pubKey = oData.responseMsg.data;
+                callback();
+              }
+            });
+        },
+        startPlay() {
+          if ((this.n + 1) * 9 < this.devices.length) {
+            setTimeout(() => {
+              this.devices
+                .slice(this.n * 9, (this.n + 1) * 9)
+                .forEach((item) => {
+                  var cameraIndexCode = item;
+                  var streamMode = 0;
+                  var transMode = 1;
+                  var gpuMode = 0;
+                  var wndId = -1;
+                  this.oWebControl.JS_RequestInterface({
+                    funcName: "startPreview",
+                    argument: JSON.stringify({
+                      cameraIndexCode: cameraIndexCode,
+                      streamMode: streamMode,
+                      transMode: transMode,
+                      gpuMode: gpuMode,
+                      wndId: wndId,
+                    }),
+                  });
+                });
+            }, 3000);
+          } else {
+            this.n = 0;
+            setTimeout(() => {
+              this.devices
+                .slice(this.n * 9, (this.n + 1) * 9)
+                .forEach((item) => {
+                  var cameraIndexCode = item;
+                  var streamMode = 0;
+                  var transMode = 1;
+                  var gpuMode = 0;
+                  var wndId = -1;
+                  this.oWebControl.JS_RequestInterface({
+                    funcName: "startPreview",
+                    argument: JSON.stringify({
+                      cameraIndexCode: cameraIndexCode,
+                      streamMode: streamMode,
+                      transMode: transMode,
+                      gpuMode: gpuMode,
+                      wndId: wndId,
+                    }),
+                  });
+                });
+            }, 3000);
+          }
+        },
+        stopPlay() {
+          this.oWebControl.JS_RequestInterface({
+            funcName: "stopAllPreview",
+          });
+        },
+
+        setEncrypt(value) {
+          var encrypt = new JSEncrypt();
+          encrypt.setPublicKey(this.pubKey);
+          return encrypt.encrypt(value);
+        },
+        setWndCover() {
+          var iWidth = $(window).width();
+          var iHeight = $(window).height();
+          var oDivRect = $("#aPlayer").get(0).getBoundingClientRect();
+          var iCoverLeft = oDivRect.left < 0 ? Math.abs(oDivRect.left) : 0;
+          var iCoverTop = oDivRect.top < 0 ? Math.abs(oDivRect.top) : 0;
+          var iCoverRight =
+            oDivRect.right - iWidth > 0
+              ? Math.round(oDivRect.right - iWidth)
+              : 0;
+          var iCoverBottom =
+            oDivRect.bottom - iHeight > 0
+              ? Math.round(oDivRect.bottom - iHeight)
+              : 0;
+
+          iCoverLeft = iCoverLeft > 1550 ? 1550 : iCoverLeft;
+          iCoverTop = iCoverTop > 1000 ? 1000 : iCoverTop;
+          iCoverRight = iCoverRight > 1550 ? 1550 : iCoverRight;
+          iCoverBottom = iCoverBottom > 1000 ? 1000 : iCoverBottom;
+
+          this.oWebControl.JS_RepairPartWindow(0, 0, 1550, 1000);
+          if (iCoverLeft != 0) {
+            this.oWebControl.JS_CuttingPartWindow(0, 0, iCoverLeft, 1000);
+          }
+          if (iCoverTop != 0) {
+            this.oWebControl.JS_CuttingPartWindow(0, 0, 1000, iCoverTop);
+          }
+          if (iCoverRight != 0) {
+            this.oWebControl.JS_CuttingPartWindow(
+              1550 - iCoverRight,
+              0,
+              iCoverRight,
+              1000
+            );
+          }
+          if (iCoverBottom != 0) {
+            this.oWebControl.JS_CuttingPartWindow(
+              0,
+              1000 - iCoverBottom,
+              1550,
+              iCoverBottom
+            );
+          }
+        },
+      },
+      created() {
+        this.gettoken();
+        this.getdata();
+      },
+      computed: {
+        Newitem() {
+          var _this = this;
+          var Newitem = [];
+          var tableData = _this.deviceName;
+          tableData.map(function (item) {
+            if (item.deviceName.search(_this.input) != -1) {
+              Newitem.push(item);
+            }
+          });
+          return Newitem;
+        },
+      },
+      mounted() {
+        this.updetevideo();
+        // $(window).scroll(() => {
+        //   if (this.oWebControl != null) {
+        //     this.oWebControl.JS_Resize(1550, 1000);
+        //     this.setWndCover();
+        //   }
+        // });
+      },
+    });
+  </script>
+</html>

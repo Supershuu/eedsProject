@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #aPlayer {
+        width: 1550px;
+        height: 1000px;
+        margin-left: 350px;
+        margin-top: 60px;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="./js/jsWebControl-1.0.0.min.js"></script>
+    <script src="./js/jquery-1.12.4.min.js"></script>
+    <script src="./js/jsencrypt.min.js"></script>
+    <div id="aPlayer"></div>
+    <script>
+      let id = JSON.parse(localStorage.getItem("LoginUser"));
+      let departID = id.departID;
+      let initCount = 0;
+      let n = 0;
+      let device = [];
+      let updatetime = window.localStorage.getItem("rest");
+      updatetime = JSON.parse(updatetime);
+      function getajax(url, data, callback) {
+        $.ajax({
+          type: "POST",
+          url: url,
+          data: data,
+          success: function (res) {
+            callback(res);
+          },
+          dataType: "json",
+        });
+      }
+      function initPlugin() {
+        oWebControl = new WebControl({
+          szPluginContainer: "aPlayer",
+          iServicePortStart: 15900,
+          iServicePortEnd: 15909,
+          szClassId: "23BF3B0A-2C56-4D97-9C03-0CB103AA8F11",
+          cbConnectSuccess: () => {
+            oWebControl
+              .JS_StartService("window", {
+                dllPath: "./VideoPluginConnect.dll",
+              })
+              .then(() => {
+                oWebControl.JS_CreateWnd("aPlayer", 1550, 1000).then(() => {
+                  init();
+                });
+              });
+          },
+          cbConnectError: () => {
+            oWebControl = null;
+            $("#aPlayer").html("插件未启动，正在尝试启动，请稍候...");
+            WebControl.JS_WakeUp("VideoWebPlugin://");
+            initCount++;
+            if (initCount < 3) {
+              setTimeout(function () {
+                initPlugin();
+              }, 3000);
+            } else {
+              $("#aPlayer").html("插件启动失败，请检查插件是否安装！");
+            }
+          },
+          cbConnectClose: (bNormalClose) => {
+            console.log("cbConnectClose");
+            _this.oWebControl = null;
+          },
+        });
+      }
+      function init() {
+        getPubKey(() => {
+          var appkey = "20133873";
+          var secret = this.setEncrypt("x1JOExMuwQBTHDJrrKiM");
+          var ip = "219.151.150.212";
+          var playMode = 0;
+          var port = 2443;
+          var snapDir = "D:\\SnapDir";
+          var videoDir = "D:\\VideoDir";
+          var layout = "3x3";
+          var enableHTTPS = 1;
+          var encryptedFields = "secret";
+          var showToolbar = 1;
+          var showSmart = 1;
+          var buttonIDs =
+            "0,16,256,257,258,259,260,512,513,514,515,516,517,768,769";
+          this.oWebControl
+            .JS_RequestInterface({
+              funcName: "init",
+              argument: JSON.stringify({
+                appkey: appkey,
+                secret: secret,
+                ip: ip,
+                playMode: playMode,
+                port: port,
+                snapDir: snapDir,
+                videoDir: videoDir,
+                layout: layout,
+                enableHTTPS: enableHTTPS,
+                encryptedFields: encryptedFields,
+                showToolbar: showToolbar,
+                showSmart: showSmart,
+              }),
+            })
+            .then((oData) => {
+              oWebControl.JS_Resize(1550, 1000);
+            });
+        });
+      }
+      function getPubKey(callback) {
+        oWebControl
+          .JS_RequestInterface({
+            funcName: "getRSAPubKey",
+            argument: JSON.stringify({
+              keyLength: 1024,
+            }),
+          })
+          .then((oData) => {
+            if (oData.responseMsg.data) {
+              pubKey = oData.responseMsg.data;
+              callback();
+            }
+          });
+      }
+      function startPlay() {
+        if ((n + 1) * 9 < device.length) {
+          setTimeout(() => {
+            device.slice(n * 9, (n + 1) * 9).forEach((item) => {
+              var cameraIndexCode = item;
+              var streamMode = 0;
+              var transMode = 1;
+              var gpuMode = 0;
+              var wndId = -1;
+              this.oWebControl.JS_RequestInterface({
+                funcName: "startPreview",
+                argument: JSON.stringify({
+                  cameraIndexCode: cameraIndexCode,
+                  streamMode: streamMode,
+                  transMode: transMode,
+                  gpuMode: gpuMode,
+                  wndId: wndId,
+                }),
+              });
+            });
+          }, 3000);
+        } else {
+          n = 0;
+          setTimeout(() => {
+            device.slice(n * 9, (n + 1) * 9).forEach((item) => {
+              var cameraIndexCode = item;
+              var streamMode = 0;
+              var transMode = 1;
+              var gpuMode = 0;
+              var wndId = -1;
+              oWebControl.JS_RequestInterface({
+                funcName: "startPreview",
+                argument: JSON.stringify({
+                  cameraIndexCode: cameraIndexCode,
+                  streamMode: streamMode,
+                  transMode: transMode,
+                  gpuMode: gpuMode,
+                  wndId: wndId,
+                }),
+              });
+            });
+          }, 3000);
+        }
+      }
+      function stopPlay() {
+        oWebControl.JS_RequestInterface({
+          funcName: "stopAllPreview",
+        });
+      }
+      function setEncrypt(value) {
+        var encrypt = new JSEncrypt();
+        encrypt.setPublicKey(pubKey);
+        return encrypt.encrypt(value);
+      }
+      getajax(
+        "http://www.cqset.com:3100/api/v1/pc/devicelist",
+        {
+          departID: departID,
+        },
+        function (res) {
+          console.log(res);
+          let deviceName = res.data.list;
+          let tableDatass = res.data.list;
+          let _Data = res.data.list;
+          _Data.map((item, index) => {
+            if (item.deviceSerial.length > 9) {
+              device.push(item.deviceSerial);
+            }
+          });
+        }
+      );
+      updatetime = updatetime + 0;
+      initPlugin();
+      startPlay();
+      setInterval(() => {
+        n++;
+        stopPlay();
+        startPlay();
+      }, updatetime);
+    </script>
+  </body>
+</html>

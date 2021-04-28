@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="./js/EZUIKit-JavaScript/ezuikit.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <div id="aPlayer" style="width: 1550px; height: 1000px"></div>
+    <script src="./js/EZUIKit-JavaScript/ezuikit.js"></script>
+    <script>
+      let departID;
+      let zDevice = [];
+      let ysUrl = "";
+      let decoder;
+      let num = window.localStorage.getItem("res");
+      num = JSON.parse(num);
+      function getajax(url, data, callback) {
+        $.ajax({
+          type: "POST",
+          url: url,
+          data: data,
+          success: function (res) {
+            callback(res);
+          },
+          dataType: "json",
+        });
+      }
+      function getdata() {
+        let id = JSON.parse(localStorage.getItem("LoginUser"));
+        departID = id.departID;
+        getajax(
+          "http://www.cqset.com:3100/api/v1/pc/devicelist",
+          {
+            departID: departID,
+          },
+          function (res) {
+            let _Data = res.data.list;
+            _Data.map((item, index) => {
+              if (item.deviceSerial.length > 9) {
+              } else {
+                zDevice.push(item.deviceSerial);
+              }
+            });
+            let index1 = window.localStorage.getItem("res");
+            decoder = null;
+            ysUrl = "";
+            var start = num * 9;
+            var end = (num + 1) * 9;
+            for (; start < end; start++) {
+              str = "ezopen://open.ys7.com/" + zDevice[start] + "/1.live" + ",";
+              ysUrl = ysUrl.concat(str);
+            }
+            initEzuikit();
+          }
+        );
+      }
+      function initEzuikit() {
+        decoder = new EZUIKit.EZUIPlayer({
+          id: "aPlayer",
+          autoplay: true,
+          url: ysUrl,
+          accessToken:
+            "at.45jrfrvh9wk7i0143rletd9s3vp0ppqd-3d3dyg7k1f-0qua29z-xl7fkwq2h",
+          decoderPath: "./js/EZUIKit-JavaScript",
+          width: 1550,
+          height: 1000,
+          splitBasis: 3,
+        });
+      }
+      getdata();
+    </script>
+  </body>
+</html>

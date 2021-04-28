@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link
+      rel="stylesheet"
+      href="./node_modules/element-ui/lib/theme-chalk/index.css"
+    />
+    <style>
+      *::-webkit-scrollbar {
+        width: 7px;
+        height: 10px;
+        background-color: transparent;
+      }
+
+      /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+      *::-webkit-scrollbar-track {
+        background-color: #fff;
+      } /*定义滚动条轨道 内阴影+圆角*/
+      *::-webkit-scrollbar-thumb {
+        background-color: #00b1df;
+        border-radius: 6px;
+      }
+
+      /*定义滑块 内阴影+圆角*/
+      .scrollbarHide::-webkit-scrollbar {
+        display: none;
+      }
+
+      .scrollbarShow::-webkit-scrollbar {
+        display: block;
+      }
+      .el-tree {
+        background-color: transparent;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <div
+        style="
+          display: flex;
+          background-image: url(./img/background.png);
+          height: 60px;
+        "
+      >
+        <div id="time" style="margin-left: 2%"></div>
+        <div class="head" style="margin-left: 12%">
+          <p style="font-size: 34px; color: #01c4f7">日志</p>
+        </div>
+        <div style="margin-left: 38%">
+          <el-button @click="back" type="text"
+            ><img src="./img/返 回.png" alt=""
+          /></el-button>
+        </div>
+      </div>
+      <div style="display: flex">
+        <div class="j_left">
+          <p style="font-size: 26px; color: #00b1df; margin-top: 1%">
+            线路信息
+          </p>
+          <!-- 线路信息tree列表 -->
+          <el-tree
+            :data="departTreeList"
+            :props="defaultProps"
+            @node-click="handleNodeClick"
+            :default-expand-all="true"
+          >
+            <span class="custom-tree-node" slot-scope="{node,data}">
+              <span style="color: #00b1df">
+                <i
+                  ><img
+                    src="./img/部门.png"
+                    alt=""
+                    v-if='data.node_type == "DEPARTMENT"' />
+                  <img
+                    src="./img/线路.png"
+                    alt=""
+                    v-if='data.node_type == "LINE"' />
+                  <img
+                    src="./img/杆塔.png"
+                    alt=""
+                    v-if='data.node_type == "TOWER"' />
+                  <img
+                    src="./img/设备.png"
+                    alt=""
+                    v-if='data.node_type == "DEVICE"' /></i
+                >{{ data.name }}
+              </span>
+            </span>
+          </el-tree>
+        </div>
+        <div
+          id="pdf_wrapper"
+          style="
+            width: 79%;
+            border: 1px solid #00b1df;
+            box-shadow: 0 0 10px #00b1df;
+            height: 1000px;
+            margin-left: 2%;
+          "
+        >
+          <p
+            style="
+              font-size: 26px;
+              color: #00b1df;
+              text-align: center;
+              margin-top: 1%;
+            "
+          >
+            {{devicename}}日志
+          </p>
+          <!-- <div style="margin: 0 0 1% 0.5%">
+            <el-button size="mini" type="primary" @click="search(1)"
+              >最近一天</el-button
+            >
+            <el-button size="mini" type="primary" @click="search(2)"
+              >最近三天</el-button
+            >
+            <el-button size="mini" type="primary" @click="search(3)"
+              >最近一周</el-button
+            >
+          </div> -->
+          <!-- <div style="margin-left: 30%">
+            <el-button type="text" @click="getDate"
+              ><img src="./img/时间.png" alt=""
+            /></el-button> 
+          </div> -->
+          <el-button type="text" @click="download" style="padding: 0">
+            <img src="./img/word.png" alt="" />
+          </el-button>
+          <div
+            v-loading="loading"
+            element-loading-text="拼命加载中"
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="rgba(0, 0, 0, 0.8)"
+            style="height: 911px; width: 100%; overflow: auto"
+          >
+            <div style="display: flex; width: 100%; flex-wrap: wrap">
+              <div
+                v-for="(item,i) in tableData"
+                :class="[item.isAlarm==false?'':'active']"
+                v-show="image"
+                style="width: 32.8%; margin: 0 5px 6px 0"
+              >
+                <img
+                  :src="item.picUrlList[0].picUrl"
+                  alt=""
+                  @contextmenu.prevent="open(item)"
+                  @click="bigimage(item.picUrlList[0].picUrl)"
+                />
+                <span
+                  style="
+                    color: #fff;
+                    display: inline-block;
+                    width: 220px;
+                    text-align: center;
+                  "
+                  >{{item.cameraName}}</span
+                >
+                <span
+                  style="
+                    color: #fff;
+                    display: inline-block;
+                    width: 180px;
+                    text-align: center;
+                  "
+                  >{{item.createTime}}</span
+                >
+                <span
+                  style="
+                    color: #fff;
+                    display: inline-block;
+                    width: 80px;
+                    text-align: center;
+                  "
+                  v-if="item.isAlarm==false"
+                  >定时巡检</span
+                >
+                <span
+                  style="
+                    color: #fff;
+                    display: inline-block;
+                    width: 80px;
+                    text-align: center;
+                  "
+                  v-else
+                  >AI告警</span
+                >
+              </div>
+              <div
+                :class="[item.isAlarm==false?'':'active']"
+                v-for="(item,i) in presetName"
+                :key="i"
+                v-show="!image"
+                style="width: 32.8%; margin: 0 5px 6px 0"
+              >
+                <!-- {{presetName}} -->
+                <img
+                  :src="imageurl+item.pic_url"
+                  alt=""
+                  @click="bigimage(imageurl+item.pic_url)"
+                  @contextmenu.prevent="open(item)"
+                />
+                <span
+                  style="
+                    color: #fff;
+                    display: inline-block;
+                    width: 220px;
+                    text-align: center;
+                  "
+                  >{{item.name}}</span
+                >
+                <span
+                  style="
+                    color: #fff;
+                    display: inline-block;
+                    width: 180px;
+                    text-align: center;
+                  "
+                  >{{item.time}}</span
+                >
+                <span
+                  style="
+                    color: #fff;
+                    display: inline-block;
+                    width: 80px;
+                    text-align: center;
+                  "
+                  v-if="item.isAlarm==false"
+                  >定时巡检</span
+                >
+                <span
+                  style="
+                    color: #fff;
+                    display: inline-block;
+                    width: 80px;
+                    text-align: center;
+                  "
+                  v-else
+                  >AI告警</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <el-dialog :visible.sync="dialogTableVisible" width="70%">
+        <el-image
+          :src="src"
+          alt=""
+          style="width: 95%"
+          :preview-src-list="imglist"
+        ></el-image>
+      </el-dialog>
+    </div>
+  </body>
+  <script src="./js/vue.js"></script>
+  <script src="./js/jquery.min.js"></script>
+  <script src="./js/jquery-1.11.1.js"></script>
+  <script src="./js/index.js"></script>
+  <script src="./js/clock.js"></script>
+  <script src="./js/FileSaver.js"></script>
+  <script src="./js/jquery.wordexport.js"></script>
+  <script src="./js/print.js"></script>
+  <script>
+    let electron = require("electron");
+    const { ipcRenderer } = electron;
+    new Vue({
+      el: "#app",
+      data: {
+        data: [],
+        defaultProps: {
+          children: "child",
+          label: "name",
+        },
+        src: "",
+        tableData: [],
+        dialogTableVisible: false,
+        imglist: [],
+        date: false,
+        value1: "",
+        loading: true,
+        isActive: "active",
+        image: true,
+        presetName: [],
+        imageurl: "http://www.cqset.com:3100/",
+        devicename: "",
+        getDepartid: "",
+        departTreeList: [],
+      },
+      created() {
+        this.getDepartID();
+      },
+      methods: {
+        //在localStorage里去取出登陆成功返回的部门ID
+        getDepartID() {
+          this.getDepartid = "";
+          let id = JSON.parse(localStorage.getItem("LoginUser"));
+          this.getDepartid = id.departID;
+          // alert(this.getDepartid);
+        },
+        back() {
+          ipcRenderer.send("openindex");
+        },
+        download() {
+          Print("#pdf_wrapper", {
+            onStart: function () {
+              console.log("onStart", new Date());
+            },
+            onEnd: function () {
+              console.log("onEnd", new Date());
+            },
+          });
+        },
+        getDate() {
+          this.date = true;
+        },
+        bigimage(val) {
+          // console.log(val);
+          this.dialogTableVisible = true;
+          this.src = val;
+        },
+        open(val) {
+          // this.dialogTableVisible = true;
+          // this.src = item;
+          ipcRenderer.send("openvideos", val);
+        },
+        search(val) {},
+        getajax(url, data, callback) {
+          $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            success: function (res) {
+              //    console.log(res);
+              callback(res);
+            },
+            dataType: "json",
+          });
+        },
+        handleNodeClick(datas) {
+          // console.log(datas);
+          let that = this;
+          if (datas.node_type == "DEPARTMENT") {
+            let data = {
+              page: 1,
+              size: 100,
+              sort: "desc",
+              keyword: "",
+              dept_id: datas.dept_id,
+            };
+            $.ajax({
+              type: "POST",
+              url: "http://www.cqset.com:8081/api/v2/line/list",
+              contentType: "application/json; charset=utf-8",
+              data: JSON.stringify(data),
+              success: function (res) {
+                datas.child = res.data;
+              },
+            });
+          }
+          if (datas.node_type == "LINE") {
+            let data = {
+              page: 1,
+              size: 100,
+              sort: "desc",
+              keyword: "",
+              line_id: datas.line_id,
+            };
+            $.ajax({
+              type: "POST",
+              url: "http://www.cqset.com:8081/api/v2/towers/list",
+              contentType: "application/json; charset=utf-8",
+              data: JSON.stringify(data),
+              success: function (res) {
+                datas.child = res.data;
+              },
+            });
+          }
+          if (datas.node_type == "TOWER") {
+            let data = {
+              page: 1,
+              size: 100,
+              sort: "desc",
+              keyword: "",
+              tower_id: datas.tower_id,
+            };
+            $.ajax({
+              type: "POST",
+              url: "http://www.cqset.com:8081/api/v2/device/list",
+              contentType: "application/json; charset=utf-8",
+              data: JSON.stringify(data),
+              success: function (res) {
+                datas.child = res.data;
+              },
+            });
+          }
+          if (datas.node_type == "DEVICE") {
+            // console.log(datas);
+            that.devicename = datas.name;
+            var mounth = new Date().getMonth() + 1;
+            var mounths = "0" + mounth;
+            var date = new Date().getDate() - 1;
+            var endTime =
+              new Date().getFullYear() +
+              "-" +
+              mounths +
+              "-" +
+              new Date().getDate() +
+              "T" +
+              new Date().getHours() +
+              ":" +
+              "01" +
+              ":" +
+              "01" +
+              "+08:00";
+            var startTime =
+              new Date().getFullYear() +
+              "-" +
+              mounths +
+              "-" +
+              date +
+              "T" +
+              new Date().getHours() +
+              ":" +
+              "01" +
+              ":" +
+              "01" +
+              "+08:00";
+            let data = {
+              sn: datas.sn,
+              device_type: datas.device_type,
+              page: 1,
+              size: 10,
+              sort: "desc",
+              start_time: startTime,
+              end_time: endTime,
+            };
+            that.presetName = [];
+            that.imglist = [];
+            $.ajax({
+              type: "POST",
+              url: "http://www.cqset.com:8081/api/v2/device/get_device_log",
+              contentType: "application/json; charset=utf-8",
+              data: JSON.stringify(data),
+              success: function (res) {
+                res.data.forEach((item) => {
+                  var created_at = item.created_at.replace("T", " ");
+                  var time = created_at.replace("+08:00", " ");
+                  var pic_url_list = JSON.parse(item.pic_url_list);
+                  item.pic_url_list = pic_url_list;
+                  item.created_at = time;
+                  item.pic_url_list.forEach((items) => {
+                    // console.log(items);
+                    let fileName = that.imageurl + items.fileName;
+                    that.imglist.push(fileName);
+                    that.presetName.push({
+                      name: datas.name,
+                      time: item.created_at,
+                      desc: items.desc,
+                      deviceSerial: item.camera_index_code,
+                      pic_url: items.fileName,
+                      isAlarm: items.isAlarm,
+                    });
+                  });
+                });
+                that.image = false;
+                // console.log(that.presetName);
+              },
+            });
+          }
+        },
+        // 得到部门的树形数据
+        getdepart() {
+          let that = this;
+
+          let d = that.getDepartid.substr(2, 2);
+          let data = { pid: +d }; //+隐式转换成number
+          $.ajax({
+            type: "POST",
+            url: "http://www.cqset.com:8081/api/v2/dept/tree",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(data),
+            success: function (res) {
+              // console.log(res);
+              let data = [];
+              data.push(res.data);
+              that.departTreeList = data;
+              // console.log(data);
+            },
+          });
+        },
+        getTabledata() {
+          let that = this;
+          let endTime = new Date().getTime();
+          let startTime = new Date().getTime() - 84000000;
+          that.getajax(
+            "http://www.cqset.com:3100/api/v1/device/device_submit",
+            {
+              departID: this.getDepartid,
+              headID: "18",
+              footerID: "5",
+              page: 0,
+              pageSize: 10,
+              type: 1,
+              startTime: startTime,
+              endTime: endTime,
+            },
+            function (res) {
+              // alert(JSON.stringify(res));
+              // that.tableData = res.data.list;
+              res.data.list.forEach((item) => {
+                // console.log(item);
+                if (item.picUrlList.length > 0) {
+                  that.tableData.push(item);
+                  item.picUrlList.forEach((items) => {
+                    that.imglist.push(items.picUrl);
+                  });
+                }
+              });
+              that.loading = false;
+
+              //   that.getajax(
+              //     "http://www.cqset.com:3100/api/v1/device/device_submit",
+              //     {
+              //       departID: this.getDepartid,
+              //       headID: "18",
+              //       footerID: "5",
+              //       page: 0,
+              //       pageSize: 10,
+              //       type: 0,
+              //       startTime: startTime,
+              //       endTime: endTime,
+              //     },
+              //     function (res) {
+              //       console.log(res);
+              //       res.data.list.forEach((item) => {
+              //         if (item.picUrlList.length > 0) {
+              //           that.tableData.push(item);
+              //           item.picUrlList.forEach((items) => {
+              //             that.imglist.push(items.picUrl);
+              //           });
+              //         }
+              //       });
+              //       that.loading = false;
+              //     }
+              //   );
+            }
+          );
+        },
+      },
+      mounted() {
+        this.getdepart();
+        this.getTabledata();
+      },
+    });
+  </script>
+</html>
