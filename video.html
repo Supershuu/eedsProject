@@ -13,7 +13,6 @@
       href="./node_modules/element-ui/lib/theme-chalk/index.css"
     />
     <style>
-      /* 防止闪烁 */
       [v-cloak] {
         display: none;
       }
@@ -22,7 +21,6 @@
         left: auto !important;
         display: none !important;
       }
-
       .amap-copyright {
         right: 70px !important;
         left: auto !important;
@@ -132,11 +130,11 @@
             display: flex;
             background-image: url(./img/background.png);
             height: 60px;
+            justify-content: center;
           "
         >
           <p
             style="
-              margin-left: 38%;
               vertical-align: middle;
               font-size: 36px;
               margin-bottom: 0.5%;
@@ -164,7 +162,9 @@
                   type="text"
                   title="视频监控"
                   ><img src="./img/监测点对比分析.png" alt="" />
-                  <p style="font-size: 10px; color: #fff">视频监控</p>
+                  <p style="font-size: 10px; color: #fff; margin-top: 8px">
+                    视频监控
+                  </p>
                 </el-button>
               </div>
 
@@ -175,10 +175,11 @@
                   title="测温装置"
                   @click="temperature"
                   ><img src="./img/测温.png" alt="" />
-                  <p style="font-size: 10px; color: #fff">测温装置</p>
+                  <p style="font-size: 10px; color: #fff; margin-top: 8px">
+                    测温装置
+                  </p>
                 </el-button>
               </div>
-
               <div style="margin-left: 26%" class="button">
                 <el-button
                   size="mini"
@@ -186,7 +187,9 @@
                   title="布控装置"
                   @click="control"
                   ><img src="./img/监控.png" alt="" />
-                  <p style="font-size: 10px; color: #fff">布控装置</p>
+                  <p style="font-size: 10px; color: #fff; margin-top: 8px">
+                    布控装置
+                  </p>
                 </el-button>
               </div>
               <div style="margin-left: 26%" class="button">
@@ -196,7 +199,9 @@
                   title="杆塔监测"
                   @click="tower"
                   ><img src="./img/铁塔.png" alt="" />
-                  <p style="font-size: 10px; color: #fff">杆塔监测</p>
+                  <p style="font-size: 10px; color: #fff; margin-top: 6px">
+                    杆塔监测
+                  </p>
                 </el-button>
               </div>
               <div style="margin-left: 28%" class="button">
@@ -206,8 +211,10 @@
                   title="螺丝松动"
                   @click="screw"
                   ><img src="./img/螺丝.png" alt="" />
+                  <p style="font-size: 10px; color: #fff; margin-top: 6px">
+                    螺丝松动
+                  </p>
                 </el-button>
-                <p style="font-size: 10px; color: #fff">螺丝松动</p>
               </div>
               <div style="margin-left: 24%" class="button">
                 <el-button
@@ -216,7 +223,9 @@
                   title="驱鸟系统"
                   @click="bird"
                   ><img src="./img/鸟02.png" alt="" />
-                  <p style="font-size: 10px; color: #fff">驱鸟系统</p>
+                  <p style="font-size: 10px; color: #fff; margin-top: 8px">
+                    驱鸟系统
+                  </p>
                 </el-button>
               </div>
               <div class="button" style="margin-left: 28%">
@@ -226,7 +235,9 @@
                   title="GNSS"
                   @click="displacement"
                   ><img src="./img/边坡.png" alt="" />
-                  <p style="font-size: 10px; color: #fff">GNSS</p>
+                  <p style="font-size: 10px; color: #fff; margin-top: 6px">
+                    GNSS
+                  </p>
                 </el-button>
               </div>
 
@@ -237,7 +248,9 @@
                   title="AI智能分析"
                   @click="ai"
                   ><img src="./img/ai智能分析.png" alt="" />
-                  <p style="font-size: 10px; color: #fff">AI智能分析</p>
+                  <p style="font-size: 10px; color: #fff; margin-top: 8px">
+                    AI智能分析
+                  </p>
                 </el-button>
               </div>
               <div class="button">
@@ -247,7 +260,9 @@
                   title="线路故障定位系统"
                   @click="location"
                   ><img src="./img/故障定位.png" alt="" />
-                  <p style="font-size: 10px; color: #fff">线路故障定位系统</p>
+                  <p style="font-size: 10px; color: #fff; margin-top: 8px">
+                    线路故障定位系统
+                  </p>
                 </el-button>
               </div>
               <div style="margin-left: 17%" class="button">
@@ -257,19 +272,25 @@
                   title="无人机巡检"
                   @click="uva"
                   ><img src="./img/无人机.png" alt="" />
-                  <p style="font-size: 10px; color: #fff">无人机巡检</p>
+                  <p style="font-size: 10px; color: #fff; margin-top: 4px">
+                    无人机巡检
+                  </p>
                 </el-button>
               </div>
               <div style="margin-left: 28%" class="button">
                 <el-button size="mini" type="text" title="安全帽" @click="safe"
                   ><img src="./img/安全帽.png" alt="" />
-                  <p style="font-size: 10px; color: #fff">安全帽</p>
+                  <p style="font-size: 10px; color: #fff; margin-top: 4px">
+                    安全帽
+                  </p>
                 </el-button>
               </div>
               <div style="margin-left: 27%" class="button">
                 <el-button size="mini" type="text" title="日志" @click="journal"
                   ><img src="./img/日志.png" alt="" />
-                  <p style="font-size: 10px; color: #fff">日志</p>
+                  <p style="font-size: 10px; color: #fff; margin-top: 4px">
+                    日志
+                  </p>
                 </el-button>
               </div>
             </div>
@@ -409,6 +430,7 @@
                   <el-card
                     class="box-card gaojin"
                     v-loading="loading"
+                    style="height: 190px"
                     element-loading-text="拼命加载中"
                     element-loading-spinner="el-icon-loading"
                     element-loading-background="rgba(0, 0, 0, 0.8)"
@@ -506,22 +528,9 @@
               </div>
               <div style="width: 100%; display: flex; height: 195px">
                 <div style="width: 50%; border-right: 1px solid #00b1df">
-                  <!-- <p
-                  style="
-                    text-align: center;
-                    font-size: 16px;
-                    color: #00b1df;
-                    margin-top: 1%;
-                  "
-                >
-                  在线统计图
-                </p> -->
                   <div id="echarts"></div>
                 </div>
                 <div style="width: 50%">
-                  <!-- <p style="text-align: center; font-size: 16px; color: #00b1df">
-                  告警统计图
-                </p> -->
                   <div id="echart"></div>
                 </div>
               </div>
@@ -548,17 +557,11 @@
   <script>
     let electron = require("electron");
     const { ipcRenderer } = electron;
-    new Vue({
+    var app = new Vue({
       el: "#app",
       data: {
-        tableData: [],
-        tableDatas: [],
-        tableDatass: [],
-        dialogTableVisible: false,
-        srcs: "",
-        imglist: [],
+        data: [],
         deviceName: [],
-        true: true,
         departTreeList: [],
         defaultProps: {
           children: "child",
@@ -582,16 +585,6 @@
         this.getdepart();
         this.getbar();
         this.getimage();
-        setInterval(() => {
-          this.getimage();
-        }, 300000);
-        // this.getdata();
-        clearInterval(
-          setInterval(() => {
-            this.getimage();
-          }, 300000)
-        );
-        // this.getmap();
       },
       methods: {
         //在localStorage里去取出登陆成功返回的部门ID
@@ -600,19 +593,52 @@
           this.centerZ = [];
           let id = JSON.parse(localStorage.getItem("LoginUser"));
           this.getDepartid = id.departID;
-          switch (this.getDepartid) {
+          let arr = this.getDepartid.split("/");
+          var tmp = this.getDepartid;
+          switch (tmp) {
+            case "1/29/":
+              this.titleShow = "薛家湾供电局";
+              this.centerZ = [111.236606, 39.864931];
+              break;
+            case "1/222/":
+              this.titleShow = "故障定位";
+              this.centerZ = [106.550464, 29.563761];
+              break;
+            case "1/":
+              this.titleShow = "南电科技智慧输电管理平台";
+              this.centerZ = [106.550464, 29.563761];
+              break;
             case "1/24/":
               this.titleShow = "鄂尔多斯智慧输电管理系统";
               this.centerZ = [109.452535, 39.929747];
-
+              break;
+            case "1/24/236/":
+              this.titleShow = "鄂尔多斯智慧输电一处管理系统";
+              this.centerZ = [109.452535, 39.929747];
+              break;
+            case "1/24/237/":
+              this.titleShow = "鄂尔多斯智慧输电二处管理系统";
+              this.centerZ = [109.452535, 39.929747];
               break;
             case "1/35/":
-              this.titleShow = "巴彦淖尔电业局管理系统";
+              this.titleShow = "巴彦淖尔电业局应急管理指挥中心";
               this.centerZ = [107.416959, 40.757402];
               break;
             case "1/223/":
-              this.titleShow = "西藏输电管理系统";
+              this.titleShow = "国网西藏电力公司智慧电全景平台";
               this.centerZ = [91.171961, 29.653482];
+              break;
+            case "1/56/":
+              this.titleShow = "巴彦淖尔电业局智慧输电管理系统";
+              this.centerZ = [107.416959, 40.757402];
+              break;
+            case "1/47/":
+              this.titleShow = "锡林郭勒电业局输电处";
+              this.centerZ = [116.106783, 43.941332];
+              break;
+            case "1/56/68/":
+              this.titleShow = "巴彦淖尔修试管理处";
+              this.centerZ = [107.416959, 40.757402];
               break;
           }
         },
@@ -632,13 +658,11 @@
               contentType: "application/json; charset=utf-8",
               data: JSON.stringify(data),
               success: function (res) {
-                // console.log(res);
                 datas.child = res.data;
               },
             });
           }
           if (datas.node_type == "LINE") {
-            // console.log(datas);
             let data = {
               page: 1,
               size: 100,
@@ -653,12 +677,10 @@
               data: JSON.stringify(data),
               success: function (res) {
                 datas.child = res.data;
-                // console.log(res);
               },
             });
           }
           if (datas.node_type == "TOWER") {
-            // console.log(datas);
             let data = {
               page: 1,
               size: 100,
@@ -672,86 +694,11 @@
               contentType: "application/json; charset=utf-8",
               data: JSON.stringify(data),
               success: function (res) {
-                // console.log(res);
                 datas.child = res.data;
               },
             });
           }
           if (datas.node_type == "DEVICE") {
-            var mounth = new Date().getMonth() + 1;
-            var mounths = "0" + mounth;
-
-            var endTime =
-              new Date().getFullYear() +
-              "-" +
-              mounths +
-              "-" +
-              "05" +
-              "T" +
-              new Date().getHours() +
-              ":" +
-              "01" +
-              ":" +
-              "01" +
-              "+08:00";
-            var startTime =
-              new Date().getFullYear() +
-              "-" +
-              mounths +
-              "-" +
-              "04" +
-              "T" +
-              new Date().getHours() +
-              ":" +
-              "01" +
-              ":" +
-              "01" +
-              "+08:00";
-            let data = {
-              sn: datas.sn,
-              device_type: datas.device_type,
-              page: 1,
-              size: 10,
-              sort: "desc",
-              start_time: startTime,
-              end_time: endTime,
-            };
-
-            // console.log("startTime:" + data.start_time);
-            // console.log("endTime:" + endTime);
-            $.ajax({
-              type: "POST",
-              url: "http://www.cqset.com:8081/api/v2/device/get_device_log",
-              contentType: "application/json; charset=utf-8",
-              data: JSON.stringify(data),
-              success: function (res) {
-                // console.log(res);
-                let imagelist = [];
-                that.indexlist = [];
-                that.presetName = [];
-                res.data.forEach((item) => {
-                  var created_at = item.created_at.replace("T", " ");
-                  var time = created_at.replace("+08:00", " ");
-                  // that.indexlist.push(time);
-                  var pic_url_list = JSON.parse(item.pic_url_list);
-                  item.pic_url_list = pic_url_list;
-                  item.created_at = time;
-                  that.indexlist.push(item);
-                  item.pic_url_list.forEach((items) => {
-                    if (items.isAlarm == true) {
-                      that.presetName.push({
-                        name: datas.name,
-                        time: item.created_at,
-                        desc: items.desc,
-                        deviceSerial: item.camera_index_code,
-                      });
-                    }
-                  });
-                });
-                that.image = false;
-                // console.log(that.presetName);
-              },
-            });
           }
         },
         getimage() {
@@ -771,38 +718,12 @@
               endTime: endTime,
             },
             function (res) {
-              // console.log(res);
               res.data.list.forEach((item) => {
-                // console.log(item);
                 that.indexlist.push(item);
                 that.presetName.push(item);
               });
-              // console.log(that.indexlist);
               that.loading = false;
-              // that.getajax(
-              //   "http://www.cqset.com:3100/api/v1/device/device_submit",
-              //   {
-              //     departID: this.getDepartid,
-              //     headID: "18",
-              //     footerID: "5",
-              //     page: 0,
-              //     pageSize: 10,
-              //     type: 0,
-              //     startTime: startTime,
-              //     endTime: endTime,
-              //   },
-              //   function (res) {
-              //     // console.log(res);
-              //     res.data.list.forEach((item) => {
-              //       that.indexlist.push(item);
-              //       that.presetName.push(item);
-              //       // item.picUrlList.forEach((items) => {
-              //       //   that.imagelist.push(items.picUrl);
-              //       //   // console.log(items);
-              //       // });
-              //     });
-              //   }
-              // );
+              // getmap();
             }
           );
         },
@@ -815,17 +736,16 @@
             url: url,
             data: data,
             success: function (res) {
-              //    console.log(res);
               callback(res);
             },
             dataType: "json",
           });
         },
         open(val) {
-          // console.log(item);
           ipcRenderer.send("openvideos", val);
         },
         control() {
+          localStorage.setItem("num", 1);
           ipcRenderer.send("opencontrol");
         },
         temperature() {
@@ -855,111 +775,6 @@
         safe() {
           ipcRenderer.send("opensafe");
         },
-
-        // getmap() {
-        //   var map = new AMap.Map("earth", {
-        //     resizeEnable: true, //是否可以改变大小
-        //     zoom: 10, //缩放级别
-        //     center: [109.452535, 39.929747], //地图显示中心点坐标，如果没有center属性，则会定位到你当前所处的位置
-        //     viewMode: "3D", //使用3D视图
-        //   });
-        //   map.addControl(
-        //     new AMap.MapType({
-        //       defaultType: 1, //0代表默认，1代表卫星
-        //     })
-        //   );
-        //   let data = {
-        //     page: 1,
-        //     size: 20,
-        //     sort: "desc",
-        //     keyword: "",
-        //     dept_id: 24,
-        //   };
-        //   let markers = [];
-        //   $.ajax({
-        //     type: "POST",
-        //     url: "http://www.cqset.com:8081/api/v2/line/list",
-        //     contentType: "application/json; charset=utf-8",
-        //     data: JSON.stringify(data),
-        //     success: function (res) {
-        //       res.data.forEach((item) => {
-        //         item.child.forEach((items) => {
-        //           markers.push(item.child);
-        //         });
-        //       });
-        //       //_this.markerList = markers;
-        //       //data.markerList = markers;
-        //       // var lngX;
-        //       // var latY;
-        //       // lineArr = new Array();
-        //       // for (var i = 0; i < markers.length; i++) {
-        //       //   for (var j = 0; j < markers[i].length; j++) {
-        //       //     lngX = markers[i][j].lon;
-        //       //     latY = markers[i][j].lat;
-        //       //     lineArr.push(new AMap.LngLat(lngX - 0, latY - 0));
-        //       //   }
-        //       // }
-        //       // var polyline = new AMap.Polyline({
-        //       //   path: lineArr,
-        //       //   borderWeight: 2, // 线条宽度，默认为 1
-        //       //   strokeColor: "red", // 线条颜色
-        //       //   strokeOpacity: 0.5, //线条透明度
-        //       //   lineJoin: "round", // 折线拐点连接处样式
-        //       //   lineCap: "round", //折现两端线帽的样式
-        //       // });
-        //       // // 将折线添加至地图实例
-        //       // map.add(polyline);
-        //       // addMarker();
-        //       //-------点标记
-        //       // setTimeout(addMarker(), 20000);
-        //       // this.getdata();
-        //       var timer = window.setInterval(() => {
-        //         // alert(1);
-        //         addMarker();
-        //         //alert(2);
-        //       }, 10000);
-
-        //       function addMarker() {
-        //         let mar = [];
-        //         //AMap.stop
-        //         let count11 = 0;
-        //         //console.log("addMarker" + markers.length)
-        //         markers.forEach((item, i) => {
-        //           count11++;
-        //           if (count11 < 20) {
-        //             item.forEach((items) => {
-        //               var marker = new AMap.Marker({
-        //                 map: map,
-        //                 position: [items.lon - 0, items.lat - 0], // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-        //                 resizeEnable: true, // 固定大小的窗口的大小
-        //                 offset: new AMap.Pixel(-10, -30),
-        //                 icon: new AMap.Icon({
-        //                   size: new AMap.Size(35, 40),
-        //                   image: "./img/铁塔2.png",
-        //                   imageOffset: new AMap.Pixel(-4, 1),
-        //                 }),
-        //               });
-        //               mar.push(marker);
-
-        //               //map.add(marker);
-        //               //设置标签
-        //               marker.setLabel({
-        //                 offset: new AMap.Pixel(-13, -17), //设置文本标注偏移量
-        //                 content: items.name, //设置文本标注内容
-        //                 direction: "right", //设置文本标注方位
-        //               });
-        //             });
-        //           }
-        //         });
-        //         //map.add()
-
-        //         map.add(mar);
-        //         clearInterval(timer);
-        //       }
-        //     },
-        //   });
-        // },
-
         getbar() {
           let data = {
             depart_id: this.getDepartid,
@@ -970,69 +785,36 @@
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(data),
             success: function (res) {
-              // console.log(res);
+              console.log(res);
               let num1 = [];
               let online = [];
-
-              let titleName = [
-                { name: "布控装置" },
-                { name: "测温装置" },
-                { name: "驱鸟系统" },
-                { name: "杆塔监测" },
-                { name: "螺丝松动" },
-                { name: "故障定位" },
-                { name: "隧道监控" },
+              let xdata = [
+                "驱鸟系统",
+                "GNSS",
+                "视频监控",
+                "布控装置",
+                "测温装置",
+                "杆塔监测",
+                "螺丝松动",
+                "故障定位",
+                "隧道监控",
               ];
-              let titleName1 = [
-                { name: "GNSS" },
-                { name: "布控装置" },
-                { name: "测温装置" },
-                { name: "驱鸟系统" },
-                { name: "杆塔监测" },
-                { name: "螺丝松动" },
-                { name: "故障定位" },
-                { name: "隧道监控" },
-              ];
-
-              for (var i = 0; i < res.data.length; i++) {
-                num1.push({
-                  value: res.data[i].num,
-                  name: res.data[i].name,
+              res.data.forEach((item, index) => {
+                xdata.forEach((e, i) => {
+                  if (item.name == e) {
+                    xdata.splice(i, 1);
+                    xdata.splice(index, 0, e);
+                  }
                 });
-
-                online.push({
-                  value: res.data[i].online,
-                  name: res.data[i].name,
-                });
-                // online.push(res.data[i].online);
-              }
-              if (res.data.length < 2) {
-                for (var i = 0; i < 8; i++) {
-                  num1.push({
-                    value: 0,
-                    name: titleName1[i].name,
-                  });
-                  online.push({
-                    value: 0,
-                    name: titleName1[i].name,
-                  });
-                }
-              } else {
-                for (var i = 0; i < 7; i++) {
-                  num1.push({
-                    value: 0,
-                    name: titleName[i].name,
-                  });
-                  online.push({
-                    value: 0,
-                    name: titleName1[i].name,
-                  });
-                }
-              }
-
-              console.info(online);
-
-              // console.log(num);
+                let obj1 = {};
+                obj1.value = item.num;
+                obj1.name = item.name;
+                num1.push(obj1);
+                let obj2 = {};
+                obj2.value = item.online;
+                obj2.name = item.name;
+                online.push(obj2);
+              });
               var myCharts1 = echarts.init(document.getElementById("echarts"));
               var option = {
                 title: {
@@ -1040,7 +822,6 @@
                   text: "设备在线图",
                   x: "center",
                   textStyle: {
-                    //图例文字的样式
                     color: "#00b1df",
                     fontSize: 23,
                   },
@@ -1049,7 +830,6 @@
                   right: "30",
                   top: "10",
                   textStyle: {
-                    //图例文字的样式
                     color: "#fff",
                     fontSize: 12,
                   },
@@ -1057,8 +837,7 @@
                 tooltip: {
                   trigger: "axis",
                   axisPointer: {
-                    // 坐标轴指示器，坐标轴触发有效
-                    type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
+                    type: "shadow",
                   },
                 },
                 grid: {
@@ -1069,30 +848,18 @@
                 },
                 xAxis: {
                   type: "category",
-                  data: [
-                    "视频监控",
-                    "GNSS",
-                    "布控装置",
-                    "测温装置",
-                    "驱鸟系统",
-                    "杆塔监测",
-                    "螺丝松动",
-                    "故障定位",
-                    "隧道监控",
-                  ],
+                  data: xdata,
                   axisLabel: {
                     textStyle: {
-                      color: "#fff", //坐标值得具体的颜色
+                      color: "#fff",
                       fontSize: 10,
                     },
-                    // rotate: 15,
                   },
                 },
                 yAxis: {
                   type: "value",
                   show: false,
                   splitLine: {
-                    //网格线
                     show: false,
                   },
                 },
@@ -1105,10 +872,7 @@
                     barGap: 0,
                     itemStyle: {
                       normal: {
-                        //这里是重点
-                        color:
-                          //注意，如果颜色太少的话，后面颜色不会自动循环，最好多定义几个颜色
-                          ["#00eacb"],
+                        color: ["#00eacb"],
                       },
                     },
                     label: {
@@ -1128,10 +892,7 @@
                     barWidth: 25,
                     itemStyle: {
                       normal: {
-                        //这里是重点
-                        color:
-                          //注意，如果颜色太少的话，后面颜色不会自动循环，最好多定义几个颜色
-                          ["#1c68da"],
+                        color: ["#1c68da"],
                       },
                     },
                     label: {
@@ -1148,16 +909,13 @@
               };
               myCharts1.setOption(option);
 
-              // 左侧设备统计图
               var myCharts2 = echarts.init(document.getElementById("echartss"));
-              // mychart2.showLoading();
               var optionss = {
                 title: {
                   text: "设备统计图",
                   top: 15,
                   x: "center",
                   textStyle: {
-                    //图例文字的样式
                     color: "#00b1df",
                     fontSize: 23,
                   },
@@ -1170,6 +928,9 @@
                   "#1c68da",
                   "#954eff",
                   "#ff5454",
+                  "#303133",
+                  "#f56c6c",
+                  "#5c887a",
                 ],
                 tooltip: {
                   trigger: "item",
@@ -1178,7 +939,6 @@
                   bottom: "0",
                   left: "center",
                   textStyle: {
-                    //图例文字的样式
                     color: "#fff",
                     fontSize: 12,
                   },
@@ -1195,19 +955,18 @@
                     itemStyle: {
                       normal: {
                         label: {
-                          //饼图图形上的文本标签
                           show: true,
-                          position: "inner", //标签的位置
+                          position: "inner",
                           textStyle: {
                             fontWeight: 300,
-                            fontSize: 14, //文字的字体大小
+                            fontSize: 14,
                             color: "#fff",
                           },
                           formatter: "{d}%",
                         },
 
                         labelLine: {
-                          show: false, //隐藏标示线
+                          show: false,
                         },
                       },
                     },
@@ -1228,7 +987,6 @@
                   },
                 ],
               };
-
               myCharts2.setOption(optionss);
             },
           });
@@ -1238,15 +996,29 @@
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(data),
             success: function (res) {
-              // console.log(res);
+              let xdata = [
+                "视频监控",
+                "GNSS",
+                "布控装置",
+                "测温装置",
+                "驱鸟系统",
+                "杆塔监测",
+                "螺丝松动",
+                "故障定位",
+                "隧道监控",
+              ];
               let num = [];
               let online = [];
-              res.data.forEach((item) => {
+              res.data.forEach((item, index) => {
+                xdata.forEach((e, i) => {
+                  if (e == item.name) {
+                    xdata.splice(i, 1);
+                    xdata.splice(index, 0, e);
+                  }
+                });
                 num.push(item.warning_num);
                 online.push(item.clear_num);
               });
-              // console.log(num);
-
               var myCharts = echarts.init(document.getElementById("echart"));
               var options = {
                 title: {
@@ -1254,7 +1026,6 @@
                   top: 10,
                   x: "center",
                   textStyle: {
-                    //图例文字的样式
                     color: "#00b1df",
                     fontSize: 23,
                   },
@@ -1263,7 +1034,6 @@
                   right: "30",
                   top: "10",
                   textStyle: {
-                    //图例文字的样式
                     color: "#fff",
                     fontSize: 12,
                   },
@@ -1271,8 +1041,7 @@
                 tooltip: {
                   trigger: "axis",
                   axisPointer: {
-                    // 坐标轴指示器，坐标轴触发有效
-                    type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
+                    type: "shadow",
                   },
                 },
                 grid: {
@@ -1283,20 +1052,10 @@
                 },
                 xAxis: {
                   type: "category",
-                  data: [
-                    "视频监控",
-                    "GNSS",
-                    "布控装置",
-                    "测温装置",
-                    "驱鸟系统",
-                    "杆塔监测",
-                    "螺丝松动",
-                    "故障定位",
-                    "隧道监控",
-                  ],
+                  data: xdata,
                   axisLabel: {
                     textStyle: {
-                      color: "#fff", //坐标值得具体的颜色
+                      color: "#fff",
                       fontSize: 10,
                     },
                   },
@@ -1305,7 +1064,6 @@
                   type: "value",
                   show: false,
                   splitLine: {
-                    //网格线
                     show: false,
                   },
                 },
@@ -1318,7 +1076,6 @@
                     barGap: 0,
                     itemStyle: {
                       normal: {
-                        //这里是重点
                         color: ["#00b4ff"],
                       },
                     },
@@ -1339,7 +1096,6 @@
                     name: "消缺次数",
                     itemStyle: {
                       normal: {
-                        //这里是重点
                         color: ["#ff5454"],
                       },
                     },
@@ -1361,7 +1117,6 @@
         },
         getdata() {
           ipcRenderer.on("data", (e, val) => {
-            alert(val.departID);
             this.departID = val.departID;
             let that = this;
             that.getajax(
@@ -1376,16 +1131,16 @@
           });
         },
         full() {
+          localStorage.setItem("num", 0);
           ipcRenderer.send("openhome");
         },
         journal() {
           ipcRenderer.send("openjournal");
         },
-        // 获取部门的线路信息
         getdepart() {
           let that = this;
-
-          let d = that.getDepartid.substr(2, 2);
+          let d = that.getDepartid.split("/");
+          d = d[d.length - 2];
           let data = { pid: +d };
           $.ajax({
             type: "POST",
@@ -1396,98 +1151,172 @@
               let data = [];
               data.push(res.data);
               that.departTreeList = data;
-              // console.log(data);
             },
           });
         },
       },
     });
-    getmap();
-    function getmap() {
-      let that = this;
+    getMap();
+    function getMap() {
       var map = new AMap.Map("earth", {
-        resizeEnable: false, //是否可以改变大小
-        zoom: 10, //缩放级别
-        center: [109.452535, 39.929747], //地图显示中心点坐标，如果没有center属性，则会定位到你当前所处的位置
-        // [109.452535, 39.929747]
-        //107.416959,40.757402
-        viewMode: "2D", //使用3D视图
+        resizeEnable: false,
+        zoom: 10,
+        center: app.centerZ,
+        viewMode: "2D",
       });
-      // alert(JSON.stringify(this.centerZ));
-
       map.addControl(
         new AMap.MapType({
-          defaultType: 0, //0代表默认，1代表卫星
+          defaultType: 0,
         })
       );
-      let id = JSON.parse(localStorage.getItem("LoginUser"));
-      let d = id.departID.substr(2, 2);
-      let D = +d;
-
-      let data = {
-        page: 1,
-        size: 20,
-        sort: "desc",
-        keyword: "",
-        dept_id: D,
-      };
-      // console.info(data);
       let markers = [];
-      $.ajax({
-        type: "POST",
-        url: "http://www.cqset.com:8081/api/v2/line/list",
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify(data),
-        success: function (res) {
-          res.data.forEach((item) => {
-            item.child.forEach((items) => {
-              markers.push(item.child);
-            });
+      main();
+      function getAllMarkers(data) {
+        return new Promise((reslove, reject) => {
+          $.ajax({
+            type: "POST",
+            url: "http://www.cqset.com:8081/api/v2/line/list",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(data),
+            success: function (res) {
+              reslove(res);
+            },
           });
-          //-------点标记
-
-          // var timer = window.setInterval(() => {
-          addMarker();
-          // }, 10000);
-
-          function addMarker() {
-            let mar = [];
-            //AMap.stop
-            let count11 = 0;
-            markers.forEach((item, i) => {
-              count11++;
-              if (count11 < 30) {
-                item.forEach((items) => {
-                  var marker = new AMap.Marker({
-                    map: map,
-                    position: [items.lon - 0, items.lat - 0], // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-                    resizeEnable: true, // 固定大小的窗口的大小
-                    offset: new AMap.Pixel(-10, -30),
-                    icon: new AMap.Icon({
-                      size: new AMap.Size(35, 40),
-                      image: "./img/铁塔2.png",
-                      imageOffset: new AMap.Pixel(-4, 1),
-                    }),
-                  });
-                  mar.push(marker);
-
-                  //map.add(marker);
-                  //设置标签
-                  marker.setLabel({
-                    offset: new AMap.Pixel(-13, -17), //设置文本标注偏移量
-                    content: items.name, //设置文本标注内容
-                    direction: "right", //设置文本标注方位
-                  });
-                });
+        });
+      }
+      function getWarning(data) {
+        return new Promise((reslove, reject) => {
+          $.ajax({
+            type: "POST",
+            url: "http://www.cqset.com:3100/api/v1/device/device_submit",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(data),
+            success: function (res) {
+              reslove(res);
+            },
+          });
+        });
+      }
+      async function main() {
+        let endTime = new Date().getTime();
+        let startTime = new Date().getTime() - 80000000;
+        let id = JSON.parse(localStorage.getItem("LoginUser"));
+        let d = id.departID.substr(2, 2);
+        let D = +d;
+        let data1 = {
+          page: 1,
+          size: 20,
+          sort: "desc",
+          keyword: "",
+          dept_id: D,
+        };
+        let data2 = {
+          departID: id.departID,
+          headID: "18",
+          footerID: "5",
+          page: 0,
+          pageSize: 10,
+          type: 1,
+          startTime: startTime,
+          endTime: endTime,
+        };
+        let result1 = await getAllMarkers(data1);
+        let result2 = await getWarning(data2);
+        let mark1 = [];
+        let mark2 = [];
+        result1.data.forEach((item) => {
+          item.child.forEach((items) => {
+            mark1.push(items);
+          });
+        });
+        result2.data.list.forEach((item, index) => {
+          mark2.push(item);
+        });
+        addMarker1();
+        addMarker2();
+        function addMarker1() {
+          let mar = [];
+          mark1.forEach((item, index) => {
+            var marker = new AMap.Marker({
+              map: map,
+              position: [item.lon - 0, item.lat - 0],
+              resizeEnable: true,
+              offset: new AMap.Pixel(-10, -30),
+              icon: new AMap.Icon({
+                size: new AMap.Size(35, 40),
+                image: "./img/铁塔2绿.png",
+                imageOffset: new AMap.Pixel(-4, 1),
+              }),
+            });
+            marker.setLabel({
+              offset: new AMap.Pixel(-13, -17),
+              content: item.name,
+              direction: "right",
+            });
+            mar.push(marker);
+          });
+          map.add(mar);
+        }
+        function addMarker2() {
+          let mar = [];
+          mark2.forEach((item, index) => {
+            item.location = item.location.split(",");
+            var marker = new AMap.Marker({
+              map: map,
+              position: [item.location[0], item.location[1]],
+              resizeEnable: true,
+              offset: new AMap.Pixel(-10, -30),
+              icon: new AMap.Icon({
+                size: new AMap.Size(35, 40),
+                image: "./img/铁塔2.png",
+                imageOffset: new AMap.Pixel(-4, 1),
+              }),
+              extData: {
+                cameraIndexCode: item.cameraIndexCode,
+                cameraName: item.cameraName,
+              },
+            });
+            marker.setLabel({
+              offset: new AMap.Pixel(-13, -17),
+              content: item.cameraName,
+              direction: "right",
+            });
+            marker.on("click", doMaker);
+            mar.push(marker);
+          });
+          map.add(mar);
+          function doMaker(e) {
+            let text = e.target.w.extData;
+            mark2.forEach((item) => {
+              if (item.deviceSerial == text.cameraIndexCode) {
+                let val = {};
+                val.deviceSerial = item.deviceSerial;
+                val.deviceName = item.cameraName;
+                ipcRenderer.send("openvideos", val);
               }
             });
-            //map.add()
-
-            map.add(mar);
-            // clearInterval(timer);
           }
-        },
-      });
+        }
+        addMarker3();
+        function addMarker3() {
+          mark2.forEach((item) => {
+            var circleMarker = new AMap.CircleMarker({
+              center: [item.location[0], item.location[1]],
+              radius: 10 + Math.random() * 10,
+              strokeColor: "white",
+              strokeWeight: 2,
+              strokeOpacity: 0.5,
+              fillColor: "rgba(245,108,108,0.9)",
+              fillOpacity: 0.5,
+              zIndex: 10,
+              bubble: true,
+              cursor: "pointer",
+              clickable: true,
+            });
+            circleMarker.setMap(map);
+          });
+        }
+      }
     }
   </script>
 </html>

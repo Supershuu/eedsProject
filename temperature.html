@@ -30,10 +30,9 @@
       .scrollbarShow::-webkit-scrollbar {
         display: block;
       }
-.el-tree {
+      .el-tree {
         background-color: transparent;
       }
-
     </style>
   </head>
   <body>
@@ -70,7 +69,6 @@
           <p style="font-size: 26px; color: #00b1df; margin-top: 1%">
             线路信息
           </p>
-          <!-- 线路信息tree列表 -->
           <el-tree
             :data="departTreeList"
             :props="defaultProps"
@@ -102,8 +100,8 @@
           </el-tree>
         </div>
         <div style="width: 83%">
-          <div v-show="departId">
-            <p
+          <!-- <div v-show="departId"> -->
+          <!-- <p
               style="
                 font-size: 36px;
                 color: #fff;
@@ -112,9 +110,9 @@
               "
             >
               该部门下暂无该设备
-            </p>
-          </div>
-          <div v-show="!departId">
+            </p> -->
+          <!-- </div> -->
+          <div v-show="departId">
             <div style="display: flex">
               <div
                 style="
@@ -198,12 +196,12 @@
         departId: true,
         getDepartid: "",
         departTreeList: [],
+        towerID: "",
       },
       created() {
         this.getDepartID();
       },
       methods: {
-        //在localStorage里去取出登陆成功返回的部门ID
         getDepartID() {
           this.getDepartid = "";
           let id = JSON.parse(localStorage.getItem("LoginUser"));
@@ -225,12 +223,12 @@
             that.getajax(
               "http://www.cqset.com:3100/api/v1/new/datalist",
               {
-                towerID: "b80cf0c0-61db-11eb-ab6b-95550a095a03",
+                towerID: that.towerID,
                 startTime: start,
                 endTime: end,
               },
               function (res) {
-                // console.log(res);
+                console.log(res);
                 if (res.data.msg == "该时间段没有数据") {
                   this.$message({
                     message: res.data.msg,
@@ -267,13 +265,11 @@
                       text: "无线测温折线图",
                       x: "center",
                       textStyle: {
-                        //图例文字的样式
                         color: "#00b1df",
                         fontSize: 23,
                       },
                     },
                     tooltip: {
-                      // trigger: "axis"
                       trigger: "item",
                     },
                     legend: {
@@ -285,7 +281,6 @@
                       },
                       right: 40,
                       textStyle: {
-                        //图例文字的样式
                         color: "#fff",
                         fontSize: 16,
                       },
@@ -345,12 +340,12 @@
             that.getajax(
               "http://www.cqset.com:3100/api/v1/new/datalist",
               {
-                towerID: "b80cf0c0-61db-11eb-ab6b-95550a095a03",
+                towerID: that.towerID,
                 startTime: start,
                 endTime: end,
               },
               function (res) {
-                // console.log(res);
+                console.log(res);
                 if (res.data.msg == "该时间段没有数据") {
                   this.$message({
                     message: res.data.msg,
@@ -387,13 +382,11 @@
                       text: "无线测温折线图",
                       x: "center",
                       textStyle: {
-                        //图例文字的样式
                         color: "#00b1df",
                         fontSize: 23,
                       },
                     },
                     tooltip: {
-                      // trigger: "axis"
                       trigger: "item",
                     },
                     legend: {
@@ -405,7 +398,6 @@
                       },
                       right: 40,
                       textStyle: {
-                        //图例文字的样式
                         color: "#fff",
                         fontSize: 16,
                       },
@@ -465,12 +457,11 @@
             that.getajax(
               "http://www.cqset.com:3100/api/v1/new/datalist",
               {
-                towerID: "b80cf0c0-61db-11eb-ab6b-95550a095a03",
+                towerID: that.towerID,
                 startTime: start,
                 endTime: end,
               },
               function (res) {
-                // console.log(res);
                 if (res.data.msg == "该时间段没有数据") {
                   this.$message({
                     message: res.data.msg,
@@ -507,13 +498,11 @@
                       text: "无线测温折线图",
                       x: "center",
                       textStyle: {
-                        //图例文字的样式
                         color: "#00b1df",
                         fontSize: 23,
                       },
                     },
                     tooltip: {
-                      // trigger: "axis"
                       trigger: "item",
                     },
                     legend: {
@@ -525,7 +514,6 @@
                       },
                       right: 40,
                       textStyle: {
-                        //图例文字的样式
                         color: "#fff",
                         fontSize: 16,
                       },
@@ -580,7 +568,6 @@
             url: url,
             data: data,
             success: function (res) {
-              //    console.log(res);
               callback(res);
             },
             dataType: "json",
@@ -589,22 +576,20 @@
         getdata() {
           let start = Date.parse(new Date()) - 36000000;
           let end = Date.parse(new Date());
-          // console.log(val);
           let power_data = [];
           let x_data = [];
           let y_data = [];
           let time_data = [];
-          // console.log(123);
+
           let that = this;
           that.getajax(
             "http://www.cqset.com:3100/api/v1/new/datalist",
             {
-              towerID: "b80cf0c0-61db-11eb-ab6b-95550a095a03",
+              towerID: that.towerID,
               startTime: start,
               endTime: end,
             },
             function (res) {
-              // console.log(res);
               if (res.data.msg == "该时间段没有数据") {
                 this.$message({
                   message: res.data.msg,
@@ -641,13 +626,11 @@
                     text: "无线测温折线图",
                     x: "center",
                     textStyle: {
-                      //图例文字的样式
                       color: "#00b1df",
                       fontSize: 23,
                     },
                   },
                   tooltip: {
-                    // trigger: "axis"
                     trigger: "item",
                   },
                   legend: {
@@ -659,7 +642,6 @@
                     },
                     right: 40,
                     textStyle: {
-                      //图例文字的样式
                       color: "#fff",
                       fontSize: 16,
                     },
@@ -724,16 +706,15 @@
             new Date().getDate() +
             " " +
             "00:00:00";
-          // console.log(val);
           let power_data = [];
           let time_data = [];
           let x_data = [];
           let that = this;
-
+          console.log(this.getDepartid);
           that.getajax(
             "http://www.cqset.com:8081/api/v2/temp/sensor_report",
             {
-              depart_id_alter: "1/",
+              depart_id_alter: that.getDepartid,
               start_time: start,
               end_time: end,
             },
@@ -741,7 +722,7 @@
               that.getajax(
                 "http://www.cqset.com:8081/api/v2/temp/sensor_report",
                 {
-                  depart_id_alter: "1/",
+                  depart_id_alter: that.getDepartid,
                   start_time:
                     new Date().getFullYear() +
                     "-" +
@@ -760,7 +741,6 @@
                     "00:00:00",
                 },
                 function (res) {
-                  // console.log(res);
                   if (res.data.length == 0) {
                     x_data = [];
                   } else {
@@ -777,7 +757,6 @@
                       text: "历史对比图",
                       x: "center",
                       textStyle: {
-                        //图例文字的样式
                         color: "#00b1df",
                         fontSize: 23,
                       },
@@ -788,12 +767,8 @@
                     legend: {
                       data: ["上月", "当月"],
                       selected: { 上月: false, 当月: true },
-                      //   orient: "vertical",
-                      //   x: "right", //可设定图例在左、右、居中
-                      //   y: "top",
                       right: 40,
                       textStyle: {
-                        //图例文字的样式
                         color: "#fff",
                         fontSize: 16,
                       },
@@ -917,15 +892,13 @@
             new Date().getDate() +
             " " +
             "00:00:00";
-          // console.log(val);
           let power_data = [];
           let time_data = [];
           let that = this;
-
           that.getajax(
             "http://www.cqset.com:8081/api/v2/temp/sensor_report",
             {
-              depart_id_alter: "1/",
+              depart_id_alter: that.getDepartid,
               start_time: start,
               end_time: end,
             },
@@ -943,15 +916,13 @@
                 tooltip: {
                   trigger: "axis",
                   axisPointer: {
-                    // 坐标轴指示器，坐标轴触发有效
-                    type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
+                    type: "shadow",
                   },
                 },
                 title: {
                   text: "告警统计图",
                   x: "center",
                   textStyle: {
-                    //图例文字的样式
                     color: "#00b1df",
                     fontSize: 23,
                   },
@@ -970,7 +941,6 @@
                   type: "value",
                   show: false,
                   splitLine: {
-                    //网格线
                     show: false,
                   },
                 },
@@ -1002,18 +972,19 @@
           let power_data = [];
           let x_data = [];
           let that = this;
+          let date = new Date();
+          let year = date.getFullYear();
+          let month = date.getMonth() + 1;
           that.getajax(
             "http://www.cqset.com:8081/api/v2/temp/sensor_analysis",
             {
-              depart_id_alter: "1/",
-              year: 2021,
-              month: 1,
+              depart_id_alter: that.getDepartid,
+              year: year,
+              month: month,
             },
             function (res) {
               res.data.forEach((item) => {
-                // console.log(item[0]);
                 for (var obj in item) {
-                  // console.log(obj);
                   x_data.push(obj);
                   power_data.push(item[obj]);
                 }
@@ -1027,7 +998,6 @@
                   text: "分析结果图",
                   x: "center",
                   textStyle: {
-                    //图例文字的样式
                     color: "#00b1df",
                     fontSize: 23,
                   },
@@ -1036,7 +1006,6 @@
                   left: "30",
                   bottom: "10",
                   textStyle: {
-                    //图例文字的样式
                     color: "#fff",
                     fontSize: 12,
                   },
@@ -1078,7 +1047,6 @@
           );
         },
         handleNodeClick(datas) {
-          // console.log(datas);
           let that = this;
           if (datas.node_type == "DEPARTMENT") {
             let data = {
@@ -1104,7 +1072,7 @@
               size: 100,
               sort: "desc",
               keyword: "",
-              line_id: "",
+              line_id: datas.line_id,
             };
             $.ajax({
               type: "POST",
@@ -1117,12 +1085,13 @@
             });
           }
           if (datas.node_type == "TOWER") {
+            that.towerID = datas.tower_id;
             let data = {
               page: 1,
               size: 100,
               sort: "desc",
               keyword: "",
-              tower_id: "1568879795240",
+              tower_id: datas.tower_id,
             };
             $.ajax({
               type: "POST",
@@ -1134,25 +1103,28 @@
               },
             });
           }
+          if (datas.node_type == "DEVICE") {
+            let val = {
+              deviceSerial: datas.sn,
+              deviceName: datas.name,
+            };
+            ipcRenderer.send("openvideos", val);
+          }
         },
-        // 得到部门的树形数据
         getdepart() {
           let that = this;
-
-          let d = that.getDepartid.substr(2, 2);
+          let d = that.getDepartid.split("/");
+          d = d[d.length - 2];
           let data = { pid: +d }; //+隐式转换成number
-
           $.ajax({
             type: "POST",
             url: "http://www.cqset.com:8081/api/v2/dept/tree",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(data),
             success: function (res) {
-              // console.log(res);
               let data = [];
               data.push(res.data);
               that.departTreeList = data;
-              // console.log(data);
             },
           });
         },

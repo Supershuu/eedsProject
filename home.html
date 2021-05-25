@@ -18,23 +18,49 @@
       }
       .player {
         height: 1000px;
-        width: 1550px;
+        width: 100%;
         display: flex;
         flex-direction: column;
       }
       #aPlayer {
         flex: 0 0 auto;
-        width: 1550px;
+        width: 100%;
         height: 1000px;
       }
       #bPlayer {
         flex: 0 0 auto;
-        width: 1550px;
+        width: 100%;
         height: 1000px;
         margin-top: 10px;
       }
       .main {
         align-items: flex-start;
+      }
+      .newSty {
+        background-color: #d9d9d9;
+        border-radius: 4px;
+        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      }
+      .right {
+        position: relative;
+      }
+      .info {
+        display: flex;
+        flex-wrap: wrap;
+        position: absolute;
+        width: 100%;
+        height: 93%;
+        top: 7%;
+      }
+      .info div {
+        padding-left: 3%;
+        padding-top: 1.5%;
+        width: 30.3%;
+        height: 310px;
+      }
+      .infinite-list-item {
+        color: #359ee1;
+        font-size: 14px;
       }
     </style>
   </head>
@@ -42,20 +68,18 @@
   <body>
     <div id="app">
       <div class="main">
-        <!-- 左边列表展示 -->
         <div class="left">
           <ul class="infinite-list">
-            <!-- 搜索框 -->
             <el-input
               placeholder="请输入要搜索的线路"
               style="background: #00b1df"
               v-model="input"
               size="mini"
             ></el-input>
-            <!-- 展示 -->
-            <div v-for="i in Newitem">
+            <div v-for="(i,e) in Newitem" :class="{newSty:i.sta==1||i.stb==1}">
               <li class="infinite-list-item">
                 <img src="./img/摄像头.png" alt="" />
+                NO.{{e+1}}
                 <el-button
                   type="text"
                   @click="getvideo(i)"
@@ -71,8 +95,6 @@
             </div>
           </ul>
         </div>
-
-        <!-- 右侧视频 -->
         <div class="right" v-show="!only">
           <span
             style="
@@ -126,7 +148,6 @@
               src="videoe.html"
               frameborder="0"
               v-for="(item,num) in iList"
-              :key="item"
               v-if="(!bol)&&item==index"
               scrolling="no"
               id="bPlayer"
@@ -135,7 +156,6 @@
               src="videoy.html"
               frameborder="0"
               v-for="(item,num) in yList"
-              :key="item"
               v-if="(!bol)&&item==index"
               scrolling="no"
               id="bPlayer"
@@ -176,25 +196,27 @@
         oWebControl: null,
         initCount: 0,
         pubKey: "",
-        updatetime: 300000,
-        primary: "",
+        updatetime: 60000,
+        primary: "primary",
         primary1: "",
         primary2: "",
         primary3: "",
         input: "",
         baseURL: "http://www.cqset.com:3100/api",
         ysUrl: "",
-        bol: false,
+        bol: true,
         decoder: {},
         index: 0,
+        time2: 0,
+        time3: 0,
+        time4: 0,
       },
       methods: {
         fullscreens() {
           ipcRenderer.send("openindex");
         },
         change(val) {
-          this.updatetime = val;
-          this.updetevideo();
+          let _this = this;
           if (val == 60000) {
             this.primary = "primary";
             this.primary1 = "";
@@ -217,9 +239,13 @@
             this.primary3 = "primary";
             this.primary1 = "";
             this.primary = "";
-
             this.primary2 = "";
           }
+          for (let index = 0; index < 10; index++) {
+            clearInterval(index);
+          }
+          this.updatetime = val;
+          this.updetevideo();
         },
         gettoken() {
           let that = this;
@@ -254,6 +280,7 @@
         },
         getdata() {
           let id = JSON.parse(localStorage.getItem("LoginUser"));
+          let ws = window.localStorage;
           this.departID = id.departID;
           let that = this;
           that.getajax(
@@ -267,6 +294,7 @@
               let device = [];
               let zDevice = [];
               let list = [];
+              let listl = [];
               let _Data = res.data.list;
               _Data.map((item, index) => {
                 if (item.deviceSerial.length > 9) {
@@ -287,6 +315,19 @@
                   that.iList.push(index);
                 }
               }
+              ws.setItem("res", that.index);
+              ws.setItem("rest", that.updatetime);
+              listl = JSON.parse(ws.getItem("resl"));
+              that.Newitem.forEach((i, n) => {
+                listl.some((e) => {
+                  if (i.deviceSerial == e) {
+                    i.sta = 1;
+                    that.Newitem.slice(n, 1, i);
+                  }
+                  return i.deviceSerial == e;
+                });
+              });
+              that.updetevideo();
               // that.getYsUrl(zDevice);
               // that.initPlugin();
               // that.initEzuikit(bPlayer);
@@ -295,36 +336,129 @@
         },
         updetevideo() {
           let _this = this;
-          let index1 = 0;
           let isRunning = false;
-          window.localStorage.setItem("res", _this.index);
-          window.localStorage.setItem("rest", _this.updatetime);
+          let index1 = 1;
+          var yst1;
           setInterval(() => {
             if (!isRunning) {
               isRunning = true;
               if (!_this.bol) {
-                var hkTime = setInterval(() => {
+                setTimeout(() => {
+                  let listl = JSON.parse(window.localStorage.getItem("resl"));
+                  _this.Newitem.forEach((e, m) => {
+                    e.sta = 0;
+                    e.stb = 0;
+                    _this.Newitem.splice(m, 1, e);
+                  });
+                  _this.Newitem.forEach((i, n) => {
+                    listl.some((e) => {
+                      if (i.deviceSerial == e) {
+                        i.sta = 1;
+                        _this.Newitem.splice(n, 1, i);
+                      }
+                      return i.deviceSerial == e;
+                    });
+                  });
+                  _this.$forceUpdate();
+                });
+                _this.time2 = setInterval(() => {
                   _this.index++;
                   window.localStorage.setItem("res", _this.index);
                   if (_this.index >= _this.zDevice.length / 9) {
                     _this.bol = !_this.bol;
                     _this.index = 0;
-                    index1 = 0;
-                    clearInterval(hkTime);
+                    window.localStorage.setItem("res", _this.index);
+                    index1 = 1;
+                    _this.Newitem.forEach((e, m) => {
+                      e.sta = 0;
+                      _this.Newitem.splice(m, 1, e);
+                    });
+                    clearInterval(_this.time2);
                     isRunning = false;
+                  } else {
+                    _this.time3 = setTimeout(() => {
+                      let listl = JSON.parse(
+                        window.localStorage.getItem("resl")
+                      );
+                      _this.Newitem.forEach((e, m) => {
+                        e.sta = 0;
+                        e.stb = 0;
+                        _this.Newitem.splice(m, 1, e);
+                      });
+                      _this.Newitem.forEach((i, n) => {
+                        listl.some((e) => {
+                          if (i.deviceSerial == e) {
+                            i.sta = 1;
+                            _this.Newitem.splice(n, 1, i);
+                          }
+                          return i.deviceSerial == e;
+                        });
+                      });
+                      _this.$forceUpdate();
+                    }, 1000);
                   }
                 }, _this.updatetime);
               } else {
-                var ysTime = setInterval(() => {
-                  index1++;
-                  if (index1 == 8) {
-                    _this.bol = !_this.bol;
-                    index1 = 0;
-                    _this.index = 0;
-                    clearInterval(ysTime);
-                    isRunning = false;
-                  }
-                }, _this.updatetime);
+                if (_this.devices.length == 0) {
+                  _this.bol = !_this.bol;
+                } else {
+                  setTimeout(() => {
+                    let list = JSON.parse(window.localStorage.getItem("resa"));
+                    _this.Newitem.forEach((e, m) => {
+                      e.stb = 0;
+                      e.sta = 0;
+                      _this.Newitem.splice(m, 1, e);
+                    });
+                    _this.Newitem.forEach((e, m) => {
+                      list.some((i) => {
+                        if (e.deviceSerial == i) {
+                          e.stb = 1;
+                          _this.Newitem.splice(m, 1, e);
+                        }
+                        return e.deviceSerial == i;
+                      });
+                    });
+                    _this.$forceUpdate();
+                  }, 5000);
+                  _this.time3 = setInterval(() => {
+                    index1++;
+                    if (index1 >= _this.devices.length / 9 - 1) {
+                      _this.bol = !_this.bol;
+                      index1 = 1;
+                      _this.index = 0;
+                      clearTimeout(_this.time4);
+                      clearInterval(_this.time3);
+                      isRunning = false;
+                      _this.Newitem.forEach((e, m) => {
+                        e.stb = 0;
+                        e.sta = 0;
+                        _this.Newitem.splice(m, 1, e);
+                      });
+                      _this.$forceUpdate();
+                    } else {
+                      _this.time4 = setTimeout(() => {
+                        let list = JSON.parse(
+                          window.localStorage.getItem("resa")
+                        );
+                        _this.Newitem.forEach((e, m) => {
+                          e.stb = 0;
+                          e.sta = 0;
+                          _this.Newitem.splice(m, 1, e);
+                        });
+                        _this.Newitem.forEach((e, m) => {
+                          list.some((i) => {
+                            if (e.deviceSerial == i) {
+                              e.stb = 1;
+                              _this.Newitem.splice(m, 1, e);
+                            }
+                            return e.deviceSerial == i;
+                          });
+                        });
+                        _this.$forceUpdate();
+                      }, 5000);
+                    }
+                  }, _this.updatetime);
+                }
               }
             }
           }, 1000);
@@ -595,7 +729,7 @@
         },
       },
       mounted() {
-        this.updetevideo();
+        // this.updetevideo();
         // $(window).scroll(() => {
         //   if (this.oWebControl != null) {
         //     this.oWebControl.JS_Resize(1550, 1000);

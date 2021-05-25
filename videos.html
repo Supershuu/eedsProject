@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>正在播放</title>
     <link rel="stylesheet" href="./css/style.css" />
     <link rel="stylesheet" href="./css/reset.css" />
     <link
@@ -15,6 +15,10 @@
       .el-message-box {
         float: right;
         margin-top: 120px;
+      }
+      .control > div > el-button {
+        display: flex;
+        align-items: center;
       }
     </style>
   </head>
@@ -201,26 +205,55 @@
                   云台控制
                 </p>
                 <div style="display: flex; margin-top: 10%">
-                  <div>
-                    <div style="margin-left: 3%; margin-top: 5%">
-                      <el-button style="background-color: #00b1df; color: #fff"
+                  <div class="control">
+                    <div id="audioleft" style="display: none"></div>
+                    <div id="audioright" style="display: none"></div>
+                    <div style="margin-left: 3%; margin-top: 2%">
+                      <el-button
+                        style="
+                          background-color: #00b1df;
+                          color: #fff;
+                          height: 30px;
+                          display: flex;
+                          align-items: center;
+                        "
                         >设置预置点</el-button
                       >
                     </div>
-                    <div style="margin-left: 3%; margin-top: 5%">
-                      <el-button style="background-color: #00b1df; color: #fff"
+                    <div style="margin-left: 3%; margin-top: 2%">
+                      <el-button
+                        style="
+                          background-color: #00b1df;
+                          color: #fff;
+                          height: 30px;
+                          display: flex;
+                          align-items: center;
+                        "
                         >调用预置点</el-button
                       >
                     </div>
-                    <div style="margin-left: 3%; margin-top: 5%">
-                      <el-button style="background-color: #00b1df; color: #fff"
+                    <div style="margin-left: 3%; margin-top: 2%">
+                      <el-button
+                        style="
+                          background-color: #00b1df;
+                          color: #fff;
+                          height: 30px;
+                          display: flex;
+                          align-items: center;
+                        "
                         >清除预置点</el-button
                       >
                     </div>
-                    <div style="margin-left: 3%; margin-top: 5%">
+                    <div style="margin-left: 3%; margin-top: 2%">
                       <el-dropdown>
                         <el-button
-                          style="background-color: #00b1df; color: #fff"
+                          style="
+                            background-color: #00b1df;
+                            color: #fff;
+                            height: 30px;
+                            display: flex;
+                            align-items: center;
+                          "
                         >
                           预置点 &nbsp;<i
                             class="el-icon-arrow-down el-icon--right"
@@ -230,6 +263,36 @@
                           <el-dropdown-item>预置点1</el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>
+                    </div>
+                    <div style="margin-left: 3%; margin-top: 2%">
+                      <el-button
+                        style="
+                          background-color: #00b1df;
+                          color: #fff;
+                          height: 30px;
+                          width: 100%;
+                          display: flex;
+                          align-items: center;
+                        "
+                        id="startSpeak"
+                        onclick="stak()"
+                        >开始对讲</el-button
+                      >
+                    </div>
+                    <div style="margin-left: 3%; margin-top: 2%">
+                      <el-button
+                        style="
+                          background-color: #00b1df;
+                          color: #fff;
+                          height: 30px;
+                          width: 100%;
+                          display: flex;
+                          align-items: center;
+                        "
+                        id="stopSpeak"
+                        onclick="stok()"
+                        >结束对讲</el-button
+                      >
                     </div>
                   </div>
                   <div>
@@ -378,11 +441,18 @@
   <script src="./js/jsencrypt.min.js"></script>
   <script src="./js/jsWebControl-1.0.0.min.js"></script>
   <script src="./js/clock.js"></script>
+  <script src="./js/EZUIKit-JavaScript/ezuikit-talk.js"></script>
+  <script src="./js/EZUIKit-JavaScript/js/talk/adapeter.js"></script>
+  <script src="./js/EZUIKit-JavaScript/js/talk/janus.js"></script>
+  <script src="./js/EZUIKit-JavaScript/js/talk/recoder.js"></script>
+  <script src="./js/EZUIKit-JavaScript/js/talk/recorder.js"></script>
+  <script src="./js/EZUIKit-JavaScript/js/talk/tts.js"></script>
+  <script src="./js/EZUIKit-JavaScript/js/layer/layer.js"></script>
 
   <script>
     let electron = require("electron");
     const { ipcRenderer } = electron;
-    new Vue({
+    var app = new Vue({
       el: "#app",
       data: {
         btn: false,
@@ -403,6 +473,7 @@
         presets: [],
         presetIndex: -21,
         getDepartid: "",
+        decoder: {},
       },
       created() {
         this.getDepartID();
@@ -431,7 +502,6 @@
                 presetIndex: presetIndex,
               },
               function (res) {
-                // console.log(res);
                 that.presets = res.data.presets;
               }
             );
@@ -446,7 +516,6 @@
             inputErrorMessage: "设备名称不能为空",
           })
             .then(({ value }) => {
-              // console.log(value);
               let vals = this.val;
               let that = this;
               that.getajax(
@@ -456,7 +525,6 @@
                   cameraIndexCode: vals.deviceSerial,
                 },
                 function (res) {
-                  // console.log(res);
                   that.presets = res.data.presets;
                 }
               );
@@ -484,21 +552,16 @@
                 cameraIndexCode: vals.deviceSerial,
                 presetIndex: presetIndex,
               },
-              function (res) {
-                // console.log(res);
-              }
+              function (res) {}
             );
           }
         },
         handleCommand(command) {
-          // console.log(command);
           this.presetIndex = command.presetIndex;
         },
         wiper(val) {
-          // console.log(val);
           let vals = this.val;
           let that = this;
-          // console.log(vals.deviceSerial);
           that.getajax(
             "http://www.cqset.com:3100/api/v1/isc/camera/ptzCtrl",
             {
@@ -508,9 +571,7 @@
               speed: 50,
               presetIndex: -1,
             },
-            function (res) {
-              // console.log(res);
-            }
+            function (res) {}
           );
         },
         getajax(url, data, callback) {
@@ -519,7 +580,6 @@
             url: url,
             data: data,
             success: function (res) {
-              //    console.log(res);
               callback(res);
             },
             dataType: "json",
@@ -533,7 +593,6 @@
             data: {},
             success: function (data) {
               let res = JSON.parse(data);
-              // console.log(res.data.forecast[0].type);
               that.type = res.data.forecast[0].type;
               that.high = res.data.forecast[0].high.substring(3, 6);
               that.low = res.data.forecast[0].low.substring(3, 6);
@@ -550,9 +609,7 @@
               direction: direction,
               speed: 1,
             },
-            function (res) {
-              // console.log(res);
-            }
+            function (res) {}
           );
         },
         action(val) {
@@ -570,9 +627,7 @@
             url: "http://www.cqset.com:8081/api/v2/isc/controling",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(data),
-            success: function (res) {
-              // console.log(res);
-            },
+            success: function (res) {},
           });
         },
         over(val) {
@@ -590,9 +645,7 @@
             url: "http://www.cqset.com:8081/api/v2/isc/controling",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(data),
-            success: function (res) {
-              // console.log(res);
-            },
+            success: function (res) {},
           });
         },
         stop(direction) {
@@ -604,9 +657,7 @@
               deviceSerial: vals.deviceSerial,
               direction: direction,
             },
-            function (res) {
-              // console.log(res);
-            }
+            function (res) {}
           );
         },
         initPlugin() {
@@ -725,7 +776,6 @@
               }),
             })
             .then((oData) => {
-              // console.log(oData);
               if (oData.responseMsg.data) {
                 this.pubKey = oData.responseMsg.data;
                 callback();
@@ -798,19 +848,16 @@
               startTime: value,
               endTime: values,
             },
-            function (res) {
-              console.log(res);
-            }
+            function (res) {}
           );
         },
         getdata() {
+          let _this = this;
           ipcRenderer.on("value", (e, val) => {
             // document.getElementsByTagName("title")[0].innerText =
             //  alert(JSON.stringify(val))
-            console.log(val);
             this.val = val;
             let vals = this.val;
-            //长度为9就是萤石视频
             if (vals.deviceSerial.length == 9) {
               this.btn = true;
               this.isc = false;
@@ -819,7 +866,7 @@
                   "http://www.cqset.com:3100/api/v2/token/accesstoken-get",
                   {},
                   function (res) {
-                    var decoder = new EZUIKit.EZUIPlayer({
+                    _this.decoder = new EZUIKit.EZUIPlayer({
                       id: "playWinds",
                       autoplay: true,
                       url:
@@ -1018,19 +1065,80 @@
           };
           myCharts.setOption(optionss);
         },
+        // startTalk() {
+        //   this.initEZUITalk();
+        // },
+        // stopTalk() {
+        //   this.countTime("destory", 0);
+        //   this.EZUITalk.stopTalk();
+        //   this.decoder && this.decoder.openSound(0);
+        // },
+        // initEZUITalk() {
+        //   let _this = this;
+        //   let val = this.val;
+        //   url = "ezopen://open.ys7.com/" + val.deviceSerial + "/1.live";
+        //   this.getajax(
+        //     "http://www.cqset.com:3100/api/v2/token/accesstoken-get",
+        //     {},
+        //     function (res) {
+        //       function addJs(filepath, callback) {
+        //         var oJs = document.createElement("script");
+        //         oJs.setAttribute("src", filepath);
+        //         oJs.onload = callback;
+        //         document.getElementsByTagName("head")[0].appendChild(oJs);
+        //       }
+        //       addJs("./js/EZUIKit-JavaScript/ezuikit-talk.js", () => {
+        //         _this.EZUITalk = new EZUITalk({
+        //           accessToken: res.data.accessToken,
+        //           url: url,
+        //           filePath: "./js/EZUIKit-JavaScript/js/talk",
+        //         });
+        //         _this.countTime("add", 0);
+        //         _this.decoder && _this.decoder.closeSound(0);
+        //         _this.EZUITalk.startTalk();
+        //       });
+        //     }
+        //   );
+        // },
+        // countTime(type, start = 0) {
+        //   clearInterval(window.countTimer);
+        //   if (type === "add") {
+        //     var i = start;
+        //     countTimer = setInterval(function () {
+        //       ++i;
+        //     }, 1000);
+        //   } else if (type === "sub") {
+        //     var i = start;
+        //     countTimer = setInterval(function () {
+        //       if (i > 0) {
+        //         i--;
+        //         document.getElementById("time-area").innerHTML =
+        //           formatSeconds(i);
+        //       } else {
+        //         clearInterval(countTimer);
+        //         countTimer = undefined;
+        //         console.log("倒计时结束，开启声音");
+        //         _this.decoder.openSound(0);
+        //       }
+        //     }, 1000);
+        //   } else if (type === "destory") {
+        //     clearInterval(window.countTimer);
+        //     window.countTimer = undefined;
+        //   }
+        // },
       },
-
       mounted() {
         this.getdata();
         this.getweather();
         this.getbar();
+        let _this = this;
         setTimeout(() => {
-          var cameraIndexCode = this.val.deviceSerial; //获取输入的监控点编号值，必填
+          var cameraIndexCode = _this.val.deviceSerial; //获取输入的监控点编号值，必填
           var streamMode = 0; //主子码流标识：0-主码流，1-子码流
           var transMode = 1; //传输协议：0-UDP，1-TCP
           var gpuMode = 0; //是否启用GPU硬解，0-不启用，1-启用
           var wndId = -1; //播放窗口序号（在2x2以上布局下可指定播放窗口）
-          this.oWebControl.JS_RequestInterface({
+          _this.oWebControl.JS_RequestInterface({
             funcName: "startPreview",
             argument: JSON.stringify({
               cameraIndexCode: cameraIndexCode, //监控点编号
@@ -1043,5 +1151,121 @@
         }, 3000);
       },
     });
+    var countTimer;
+    var startSave = false;
+    var playing = false;
+    var autoplay = 1;
+    var audioId = 0;
+    var templete = 2;
+    var deviceSerial;
+    var channelNo = 1;
+    var EZUITalk;
+    var recodeTime = 0;
+    var recodeTimer;
+    var decoder = app.decoder;
+    var padding = false;
+    initEZUITalk();
+    function initEZUITalk() {
+      $.ajax({
+        type: "POST",
+        url: "http://www.cqset.com:3100/api/v2/token/accesstoken-get",
+        data: {},
+        success: function (res) {
+          EZUITalk = new EZUITalk({
+            accessToken: res.data.accessToken,
+            url: "ezopen://open.ys7.com/" + app.val.deviceSerial + "/1.live",
+            filePath: "./js/EZUIKit-JavaScript/js/talk",
+          });
+          deviceSerial = app.val.deviceSerial;
+          // console.log(res.data.accessToken);
+          // console.log(
+          //   "ezopen://open.ys7.com/" + app.val.deviceSerial + "/1.live"
+          // );
+        },
+      });
+    }
+    function stak() {
+      if (padding) {
+        layer.msg("等待服务响应，请稍后重试");
+        return false;
+      }
+      if (countTimer) {
+        layer.msg("语音设备正忙，请稍后重试");
+        return false;
+      } else {
+        countTime("add", 0);
+        app.decoder && app.decoder.closeSound(0);
+        EZUITalk.startTalk();
+      }
+    }
+    function stok() {
+      countTime("destory", 0);
+      EZUITalk.stopTalk();
+      app.decoder && app.decoder.openSound(0);
+    }
+    function countTime(type, start = 0) {
+      clearInterval(countTimer);
+      if (type === "add") {
+        var i = start;
+        countTimer = setInterval(() => {
+          ++i;
+        }, 1000);
+      } else if (type === "sub") {
+        var i = start;
+        countTimer = setInterval(() => {
+          if (i > 0) {
+            i--;
+          } else {
+            clearInterval(countTimer);
+            countTimer = undefined;
+            app.decoder.openSound(0);
+          }
+        }, 1000);
+      } else if (type === "destory") {
+        clearInterval(countTimer);
+        countTimer = undefined;
+      }
+    }
+    //修改padding
+    var hasMore = false;
+    var pageSize = 5;
+    var page = 0;
+    var loading = false;
+    var fetchDefaultList = false;
+    fetchVoiceList(0);
+    function fetchVoiceList(page) {
+      console.log("fetchVoiceList", page);
+      loading = true;
+      $.ajax({
+        url: "https://open.ys7.com/api/lapp/voice/query",
+        type: "POST",
+        data: {
+          accessToken:
+            "at.d54twrtpd8x3dciw1er2z0c08biiu5qd-6m2ijd0xew-0x452r7-nao6eln6z",
+          pageStart: page,
+          pageSize: 5,
+          default: fetchDefaultList ? "true" : "false",
+        },
+        dataType: "json",
+        success: function (data) {
+          console.log("data.data", data.data);
+          if (data.code == 200) {
+            randerVoliceList(data.data, 5);
+            page = data.page.page;
+            if (page == 0 && data.data.length == 0 && !fetchDefaultList) {
+              // 获取用户语音为空
+              fetchDefaultList = true;
+              fetchVoiceList(0);
+            }
+          }
+        },
+        error: function (err) {
+          console.log("err", err);
+        },
+      });
+    }
+    function randerVoliceList(data, pageSize) {
+      console.log("renderVoliceList");
+    }
   </script>
 </html>

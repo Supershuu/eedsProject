@@ -30,11 +30,9 @@
       .scrollbarShow::-webkit-scrollbar {
         display: block;
       }
-
       .el-tree {
         background-color: transparent;
       }
-
     </style>
   </head>
   <body>
@@ -71,7 +69,6 @@
           <p style="font-size: 26px; color: #00b1df; margin-top: 1%">
             线路信息
           </p>
-          <!-- 线路信息tree列表 -->
           <el-tree
             :data="departTreeList"
             :props="defaultProps"
@@ -145,7 +142,6 @@
         this.getDepartID();
       },
       methods: {
-        //在localStorage里去取出登陆成功返回的部门ID
         getDepartID() {
           this.getDepartid = "";
           let id = JSON.parse(localStorage.getItem("LoginUser"));
@@ -161,7 +157,6 @@
             url: url,
             data: data,
             success: function (res) {
-              //    console.log(res);
               callback(res);
             },
             dataType: "json",
@@ -169,7 +164,6 @@
         },
 
         handleNodeClick(datas) {
-          // console.log(datas);
           let that = this;
           if (datas.node_type == "DEPARTMENT") {
             let data = {
@@ -195,7 +189,7 @@
               size: 100,
               sort: "desc",
               keyword: "",
-              line_id: "",
+              line_id: datas.line_id,
             };
             $.ajax({
               type: "POST",
@@ -213,7 +207,7 @@
               size: 100,
               sort: "desc",
               keyword: "",
-              tower_id: "1568879795240",
+              tower_id: datas.tower_id,
             };
             $.ajax({
               type: "POST",
@@ -225,25 +219,28 @@
               },
             });
           }
+          if (datas.node_type == "DEVICE") {
+            let val = {
+              deviceSerial: datas.sn,
+              deviceName: datas.name,
+            };
+            ipcRenderer.send("openvideos", val);
+          }
         },
-        // 得到部门的树形数据
         getdepart() {
           let that = this;
-
-          let d = that.getDepartid.substr(2, 2);
+          let d = that.getDepartid.split("/");
+          d = d[d.length - 2];
           let data = { pid: +d }; //+隐式转换成number
-
           $.ajax({
             type: "POST",
             url: "http://www.cqset.com:8081/api/v2/dept/tree",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(data),
             success: function (res) {
-              // console.log(res);
               let data = [];
               data.push(res.data);
               that.departTreeList = data;
-              // console.log(data);
             },
           });
         },

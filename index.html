@@ -56,7 +56,6 @@
       <div class="sk-rotating-plane"></div>
     </div>
 
-    <!-- scripts -->
   </body>
   <script src="./js/vue.js"></script>
   <script src="./js/particles.min.js"></script>
@@ -70,16 +69,25 @@
     new Vue({
       el: "#particles-js",
       data: {
-        // input1: "cqset_nm_byne",
-        input1: "cqset_nm_eeds",
+        input1: "cqset_nm_byne", //巴彦淖尔电业局应急管理指挥中心
+        // input1: "cqset_nm_eeds", //鄂尔多斯智慧输电一处管理系统
+        // input1: "cqset_eedsc", //鄂尔多斯智慧输电二处管理系统
+        // input1: "cqset_eeds", //鄂尔多斯智慧输电管理系统
+        // input1: "cqset_nm_xlgl", //锡林郭勒电业局输电处
+        // input1: "cqset_byne_bkq", //巴彦淖尔电业局布控球
         input2: "cqset1234",
+
+        // input1: "cqset_byne_xsgl",
+        // input1: "cqset_gzdw",//故障定位
+        // input2: "1234",
+        // input2: "",
+        // input2: "byne168", //巴彦淖尔电业局布控球
         options: [],
         isName: false,
       },
       methods: {
         selectBlur(e) {
           if (e.target.value) {
-            // 不在表单的时候不需要判断，也不需要isname字段
             this.input1 = e.target.value;
             this.isName = true;
           } else {
@@ -93,8 +101,6 @@
             url: "http://www.cqset.com:3100/api/v1/pc/login",
             data: { username: that.input1, password: that.input2 },
             success: function (res) {
-              console.log(res);
-
               if (res.code == 200) {
                 let o = {
                   departID: res.data.departID,

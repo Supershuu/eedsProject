@@ -34,7 +34,7 @@
       .el-tree {
         background-color: transparent;
       }
-      </style>
+    </style>
   </head>
 
   <body>
@@ -72,7 +72,6 @@
           <p style="font-size: 26px; color: #00b1df; margin-top: 1%">
             线路信息
           </p>
-          <!-- 线路信息tree列表 -->
           <el-tree
             :data="departTreeList"
             :props="defaultProps"
@@ -205,13 +204,11 @@
         departId: true,
         getDepartid: "",
         departTreeList: [],
-
       },
       created() {
         this.getDepartID();
       },
       methods: {
-        //在localStorage里去取出登陆成功返回的部门ID
         getDepartID() {
           this.getDepartid = "";
           let id = JSON.parse(localStorage.getItem("LoginUser"));
@@ -223,7 +220,6 @@
         this.getDepartID();
       },
       methods: {
-        //在localStorage里去取出登陆成功返回的部门ID
         getDepartID() {
           this.getDepartid = "";
           let id = JSON.parse(localStorage.getItem("LoginUser"));
@@ -233,7 +229,6 @@
           ipcRenderer.send("openindex");
         },
         handleNodeClick(datas) {
-          // console.log(datas);
           let that = this;
           if (datas.node_type == "DEPARTMENT") {
             let data = {
@@ -259,7 +254,7 @@
               size: 100,
               sort: "desc",
               keyword: "",
-              line_id: "",
+              line_id: datas.line_id,
             };
             $.ajax({
               type: "POST",
@@ -277,7 +272,7 @@
               size: 100,
               sort: "desc",
               keyword: "",
-              tower_id: "1568879795240",
+              tower_id: datas.tower_id,
             };
             $.ajax({
               type: "POST",
@@ -289,12 +284,18 @@
               },
             });
           }
+          if (datas.node_type == "DEVICE") {
+            let val = {
+              deviceSerial: datas.sn,
+              deviceName: datas.name,
+            };
+            ipcRenderer.send("openvideos", val);
+          }
         },
-        // 得到部门的树形数据
         getdepart() {
           let that = this;
-
-          let d = that.getDepartid.substr(2, 2);
+          let d = that.getDepartid.split("/");
+          d = d[d.length - 2];
           let data = { pid: +d }; //+隐式转换成number
 
           $.ajax({
@@ -303,11 +304,9 @@
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(data),
             success: function (res) {
-              // console.log(res);
               let data = [];
               data.push(res.data);
               that.departTreeList = data;
-              // console.log(data);
             },
           });
         },
@@ -321,7 +320,6 @@
               text: "分析结果图",
               x: "center",
               textStyle: {
-                //图例文字的样式
                 color: "#00b1df",
                 fontSize: 23,
               },
@@ -339,19 +337,18 @@
                 itemStyle: {
                   normal: {
                     label: {
-                      //饼图图形上的文本标签
                       show: true,
-                      position: "inner", //标签的位置
+                      position: "inner",
                       textStyle: {
                         fontWeight: 300,
-                        fontSize: 14, //文字的字体大小
+                        fontSize: 14,
                         color: "#fff",
                       },
                       formatter: "{d}%",
                     },
 
                     labelLine: {
-                      show: false, //隐藏标示线
+                      show: false,
                     },
                   },
                 },
@@ -387,7 +384,6 @@
               text: "告警率",
               x: "center",
               textStyle: {
-                //图例文字的样式
                 color: "#00b1df",
                 fontSize: 23,
               },
@@ -400,7 +396,6 @@
               data: ["现在", "历史"],
               right: 40,
               textStyle: {
-                //图例文字的样式
                 color: "#fff",
                 fontSize: 16,
               },
@@ -460,31 +455,7 @@
                 emphasis: {
                   focus: "series",
                 },
-                data: [
-                  0,
-                  0,
-                  1,
-                  1,
-                  1,
-                  1,
-                  1,
-                  1,
-                  1,
-                  1,
-                  1.5,
-                  1.5,
-                  1.5,
-                  1.5,
-                  1.5,
-                  1.5,
-                  1.6,
-                  1.8,
-                  1.8,
-                  2.5,
-                  2.1,
-                  2.5,
-                  2.5,
-                ],
+                data: [0],
               },
               {
                 name: "现在",
@@ -511,32 +482,7 @@
                 emphasis: {
                   focus: "series",
                 },
-                data: [
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  1,
-                  1,
-                  1,
-                  1,
-                  1,
-                  1.5,
-                  1.6,
-                  1.5,
-                  1.8,
-                  1.5,
-                  1.1,
-                  1.5,
-                  1.5,
-                ],
+                data: [0],
               },
             ],
           };
@@ -550,7 +496,6 @@
               text: "在线率",
               x: "center",
               textStyle: {
-                //图例文字的样式
                 color: "#00b1df",
                 fontSize: 23,
               },
@@ -559,7 +504,6 @@
               bottom: "5%",
               left: "center",
               textStyle: {
-                //图例文字的样式
                 color: "#fff",
                 fontSize: 16,
               },
@@ -577,19 +521,18 @@
                 itemStyle: {
                   normal: {
                     label: {
-                      //饼图图形上的文本标签
                       show: true,
-                      position: "inner", //标签的位置
+                      position: "inner",
                       textStyle: {
                         fontWeight: 300,
-                        fontSize: 14, //文字的字体大小
+                        fontSize: 14,
                         color: "#fff",
                       },
                       formatter: "{d}%",
                     },
 
                     labelLine: {
-                      show: false, //隐藏标示线
+                      show: false,
                     },
                   },
                 },
@@ -618,7 +561,6 @@
               text: "故障率",
               x: "center",
               textStyle: {
-                //图例文字的样式
                 color: "#00b1df",
                 fontSize: 23,
               },
@@ -631,7 +573,6 @@
               data: ["现在", "历史"],
               right: 40,
               textStyle: {
-                //图例文字的样式
                 color: "#fff",
                 fontSize: 16,
               },
@@ -672,30 +613,7 @@
                 stack: "总量",
                 smooth: true,
 
-                data: [
-                  5,
-                  6,
-                  2,
-                  4,
-                  1,
-                  5,
-                  3,
-                  5,
-                  6,
-                  1.5,
-                  2.5,
-                  3.5,
-                  21.5,
-                  12.5,
-                  1.5,
-                  13.6,
-                  11.8,
-                  12.8,
-                  22.5,
-                  21.1,
-                  22.5,
-                  23.5,
-                ],
+                data: [5],
               },
               {
                 name: "现在",
@@ -703,30 +621,7 @@
                 stack: "总量",
                 smooth: true,
 
-                data: [
-                  6,
-                  6,
-                  5,
-                  4,
-                  3,
-                  8,
-                  6,
-                  1,
-                  8,
-                  2.5,
-                  25,
-                  35,
-                  2.5,
-                  2.5,
-                  12.5,
-                  11.6,
-                  14.8,
-                  18.8,
-                  22.5,
-                  29.1,
-                  1.5,
-                  13.5,
-                ],
+                data: [6],
               },
             ],
           };

@@ -71,7 +71,6 @@
           <p style="font-size: 26px; color: #00b1df; margin-top: 1%">
             线路信息
           </p>
-          <!-- 线路信息tree列表 -->
           <el-tree
             :data="departTreeList"
             :props="defaultProps"
@@ -239,7 +238,7 @@
               size: 100,
               sort: "desc",
               keyword: "",
-              line_id: "",
+              line_id: datas.line_id,
             };
             $.ajax({
               type: "POST",
@@ -257,7 +256,7 @@
               size: 100,
               sort: "desc",
               keyword: "",
-              tower_id: "1568879795240",
+              tower_id: datas.tower_id,
             };
             $.ajax({
               type: "POST",
@@ -269,11 +268,18 @@
               },
             });
           }
+          if (datas.node_type == "DEVICE") {
+            let val = {
+              deviceSerial: datas.sn,
+              deviceName: datas.name,
+            };
+            ipcRenderer.send("openvideos", val);
+          }
         },
         getdepart() {
           let that = this;
-
-          let d = that.getDepartid.substr(2, 2);
+          let d = that.getDepartid.split("/");
+          d = d[d.length - 2];
           let data = { pid: +d }; //隐式转换成number
           $.ajax({
             type: "POST",
@@ -281,7 +287,6 @@
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(data),
             success: function (res) {
-              // console.log(res);
               let data = [];
               data.push(res.data);
               that.departTreeList = data;
@@ -299,7 +304,6 @@
               text: "杆塔倾斜折线图",
               x: "center",
               textStyle: {
-                //图例文字的样式
                 color: "#00b1df",
                 fontSize: 23,
               },
@@ -315,32 +319,7 @@
             },
             series: [
               {
-                data: [
-                  3.1,
-                  2.6,
-                  1.5,
-                  2.5,
-                  3.5,
-                  2.5,
-                  4.8,
-                  6.7,
-                  7.6,
-                  4.5,
-                  3.5,
-                  2.4,
-                  3.5,
-                  7.5,
-                  5.5,
-                  6.5,
-                  2.5,
-                  5.6,
-                  3.5,
-                  2.8,
-                  2.5,
-                  2.1,
-                  2.5,
-                  1.5,
-                ],
+                data: [3.1],
                 type: "line",
                 smooth: true,
               },
@@ -352,15 +331,13 @@
             tooltip: {
               trigger: "axis",
               axisPointer: {
-                // 坐标轴指示器，坐标轴触发有效
-                type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
+                type: "shadow",
               },
             },
             title: {
               text: "告警统计图",
               x: "center",
               textStyle: {
-                //图例文字的样式
                 color: "#00b1df",
                 fontSize: 23,
               },
@@ -379,7 +356,6 @@
               type: "value",
               show: false,
               splitLine: {
-                //网格线
                 show: false,
               },
             },
@@ -413,7 +389,6 @@
               text: "分析结果图",
               x: "center",
               textStyle: {
-                //图例文字的样式
                 color: "#00b1df",
                 fontSize: 23,
               },
@@ -459,7 +434,6 @@
               text: "历史对比图",
               x: "center",
               textStyle: {
-                //图例文字的样式
                 color: "#00b1df",
                 fontSize: 23,
               },
@@ -469,12 +443,8 @@
             },
             legend: {
               data: ["上月", "当月"],
-              //   orient: "vertical",
-              //   x: "right", //可设定图例在左、右、居中
-              //   y: "top",
               right: 40,
               textStyle: {
-                //图例文字的样式
                 color: "#fff",
                 fontSize: 16,
               },
@@ -524,32 +494,7 @@
                 emphasis: {
                   focus: "series",
                 },
-                data: [
-                  3.1,
-                  2.6,
-                  1.5,
-                  2.5,
-                  3.5,
-                  2.5,
-                  4.8,
-                  6.7,
-                  7.6,
-                  4.5,
-                  3.5,
-                  2.4,
-                  3.5,
-                  7.5,
-                  5.5,
-                  6.5,
-                  2.5,
-                  5.6,
-                  3.5,
-                  2.8,
-                  2.5,
-                  2.1,
-                  2.5,
-                  1.5,
-                ],
+                data: [3.1],
               },
               {
                 name: "当月",
@@ -576,33 +521,7 @@
                 emphasis: {
                   focus: "series",
                 },
-                data: [
-                  1.2,
-                  2.8,
-                  1.1,
-                  3.4,
-                  5.0,
-                  3.4,
-                  3.1,
-                  1.4,
-                  3.2,
-                  4.1,
-                  2.6,
-                  6.0,
-                  3.4,
-                  2.5,
-                  3.1,
-                  2.6,
-                  1.5,
-                  2.5,
-                  3.5,
-                  2.5,
-                  4.8,
-                  6.7,
-                  7.6,
-                  4.5,
-                  3.5,
-                ],
+                data: [1.2],
               },
             ],
           };

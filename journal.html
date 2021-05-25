@@ -65,7 +65,6 @@
           <p style="font-size: 26px; color: #00b1df; margin-top: 1%">
             线路信息
           </p>
-          <!-- 线路信息tree列表 -->
           <el-tree
             :data="departTreeList"
             :props="defaultProps"
@@ -299,12 +298,10 @@
         this.getDepartID();
       },
       methods: {
-        //在localStorage里去取出登陆成功返回的部门ID
         getDepartID() {
           this.getDepartid = "";
           let id = JSON.parse(localStorage.getItem("LoginUser"));
           this.getDepartid = id.departID;
-          // alert(this.getDepartid);
         },
         back() {
           ipcRenderer.send("openindex");
@@ -323,13 +320,10 @@
           this.date = true;
         },
         bigimage(val) {
-          // console.log(val);
           this.dialogTableVisible = true;
           this.src = val;
         },
         open(val) {
-          // this.dialogTableVisible = true;
-          // this.src = item;
           ipcRenderer.send("openvideos", val);
         },
         search(val) {},
@@ -339,14 +333,12 @@
             url: url,
             data: data,
             success: function (res) {
-              //    console.log(res);
               callback(res);
             },
             dataType: "json",
           });
         },
         handleNodeClick(datas) {
-          // console.log(datas);
           let that = this;
           if (datas.node_type == "DEPARTMENT") {
             let data = {
@@ -403,97 +395,27 @@
             });
           }
           if (datas.node_type == "DEVICE") {
-            // console.log(datas);
-            that.devicename = datas.name;
-            var mounth = new Date().getMonth() + 1;
-            var mounths = "0" + mounth;
-            var date = new Date().getDate() - 1;
-            var endTime =
-              new Date().getFullYear() +
-              "-" +
-              mounths +
-              "-" +
-              new Date().getDate() +
-              "T" +
-              new Date().getHours() +
-              ":" +
-              "01" +
-              ":" +
-              "01" +
-              "+08:00";
-            var startTime =
-              new Date().getFullYear() +
-              "-" +
-              mounths +
-              "-" +
-              date +
-              "T" +
-              new Date().getHours() +
-              ":" +
-              "01" +
-              ":" +
-              "01" +
-              "+08:00";
-            let data = {
-              sn: datas.sn,
-              device_type: datas.device_type,
-              page: 1,
-              size: 10,
-              sort: "desc",
-              start_time: startTime,
-              end_time: endTime,
+            let val = {
+              deviceSerial: datas.sn,
+              deviceName: datas.name,
             };
-            that.presetName = [];
-            that.imglist = [];
-            $.ajax({
-              type: "POST",
-              url: "http://www.cqset.com:8081/api/v2/device/get_device_log",
-              contentType: "application/json; charset=utf-8",
-              data: JSON.stringify(data),
-              success: function (res) {
-                res.data.forEach((item) => {
-                  var created_at = item.created_at.replace("T", " ");
-                  var time = created_at.replace("+08:00", " ");
-                  var pic_url_list = JSON.parse(item.pic_url_list);
-                  item.pic_url_list = pic_url_list;
-                  item.created_at = time;
-                  item.pic_url_list.forEach((items) => {
-                    // console.log(items);
-                    let fileName = that.imageurl + items.fileName;
-                    that.imglist.push(fileName);
-                    that.presetName.push({
-                      name: datas.name,
-                      time: item.created_at,
-                      desc: items.desc,
-                      deviceSerial: item.camera_index_code,
-                      pic_url: items.fileName,
-                      isAlarm: items.isAlarm,
-                    });
-                  });
-                });
-                that.image = false;
-                // console.log(that.presetName);
-              },
-            });
+            ipcRenderer.send("openvideos", val);
           }
         },
-        // 得到部门的树形数据
         getdepart() {
           let that = this;
-
-          let d = that.getDepartid.substr(2, 2);
-          let data = { pid: +d }; //+隐式转换成number
+          let d = that.getDepartid.split("/");
+          d = d[d.length - 2];
+          let data = { pid: +d };
           $.ajax({
             type: "POST",
             url: "http://www.cqset.com:8081/api/v2/dept/tree",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(data),
             success: function (res) {
-              // console.log(res);
               let data = [];
               data.push(res.data);
               that.departTreeList = data;
-              // console.log(data);
             },
           });
         },
@@ -514,10 +436,7 @@
               endTime: endTime,
             },
             function (res) {
-              // alert(JSON.stringify(res));
-              // that.tableData = res.data.list;
               res.data.list.forEach((item) => {
-                // console.log(item);
                 if (item.picUrlList.length > 0) {
                   that.tableData.push(item);
                   item.picUrlList.forEach((items) => {
@@ -526,32 +445,6 @@
                 }
               });
               that.loading = false;
-
-              //   that.getajax(
-              //     "http://www.cqset.com:3100/api/v1/device/device_submit",
-              //     {
-              //       departID: this.getDepartid,
-              //       headID: "18",
-              //       footerID: "5",
-              //       page: 0,
-              //       pageSize: 10,
-              //       type: 0,
-              //       startTime: startTime,
-              //       endTime: endTime,
-              //     },
-              //     function (res) {
-              //       console.log(res);
-              //       res.data.list.forEach((item) => {
-              //         if (item.picUrlList.length > 0) {
-              //           that.tableData.push(item);
-              //           item.picUrlList.forEach((items) => {
-              //             that.imglist.push(items.picUrl);
-              //           });
-              //         }
-              //       });
-              //       that.loading = false;
-              //     }
-              //   );
             }
           );
         },

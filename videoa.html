@@ -24,8 +24,12 @@
       let departID = id.departID;
       let initCount = 0;
       let n = 0;
+      let ws = window.localStorage;
       let device = [];
       let updatetime = window.localStorage.getItem("rest");
+      let list = [];
+      let num2 = ws.getItem("num");
+      let url = "";
       updatetime = JSON.parse(updatetime);
       function getajax(url, data, callback) {
         $.ajax({
@@ -131,7 +135,9 @@
       function startPlay() {
         if ((n + 1) * 9 < device.length) {
           setTimeout(() => {
+            list = [];
             device.slice(n * 9, (n + 1) * 9).forEach((item) => {
+              list.push(item);
               var cameraIndexCode = item;
               var streamMode = 0;
               var transMode = 1;
@@ -148,11 +154,14 @@
                 }),
               });
             });
+            ws.setItem("resa", JSON.stringify(list));
           }, 3000);
         } else {
           n = 0;
           setTimeout(() => {
+            list = [];
             device.slice(n * 9, (n + 1) * 9).forEach((item) => {
+              list.push(item);
               var cameraIndexCode = item;
               var streamMode = 0;
               var transMode = 1;
@@ -169,6 +178,7 @@
                 }),
               });
             });
+            ws.setItem("resa", JSON.stringify(list));
           }, 3000);
         }
       }
@@ -182,26 +192,47 @@
         encrypt.setPublicKey(pubKey);
         return encrypt.encrypt(value);
       }
-      getajax(
-        "http://www.cqset.com:3100/api/v1/pc/devicelist",
-        {
-          departID: departID,
-        },
-        function (res) {
-          console.log(res);
-          let deviceName = res.data.list;
-          let tableDatass = res.data.list;
-          let _Data = res.data.list;
-          _Data.map((item, index) => {
-            if (item.deviceSerial.length > 9) {
-              device.push(item.deviceSerial);
-            }
-          });
-        }
-      );
+      num2 = JSON.parse(num2);
+      if (num2 == 0) {
+        getajax(
+          "http://www.cqset.com:3100/api/v1/pc/devicelist",
+          {
+            departID: departID,
+          },
+          function (res) {
+            let deviceName = res.data.list;
+            let tableDatass = res.data.list;
+            let _Data = res.data.list;
+            _Data.map((item, index) => {
+              if (item.deviceSerial.length > 9 && item.status == 1) {
+                device.push(item.deviceSerial);
+              }
+            });
+            initPlugin();
+            startPlay();
+          }
+        );
+      } else {
+        getajax(
+          "http://www.cqset.com:8081/api/v2/bkq/list",
+          {
+            depart_id: departID,
+          },
+          function (res) {
+            let deviceName = res.data;
+            let tableDatass = res.data;
+            let _Data = res.data;
+            _Data.map((item, index) => {
+              if (item.sn.length > 9) {
+                device.push(item.sn);
+              }
+            });
+            initPlugin();
+            startPlay();
+          }
+        );
+      }
       updatetime = updatetime + 0;
-      initPlugin();
-      startPlay();
       setInterval(() => {
         n++;
         stopPlay();

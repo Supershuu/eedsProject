@@ -24,6 +24,18 @@
         background-color: #00b1df;
         border-radius: 6px;
       } /*定义滑块 内阴影+圆角*/
+      .el-menu.el-menu--horizontal {
+        border-bottom: solid 0px #e6e6e6;
+      }
+      .el-menu-item {
+        border-radius: 3px;
+      }
+      .el-picker-panel {
+        left: 18.4% !important;
+      }
+      .popper__arrow {
+        left: 2% !important;
+      }
       .scrollbarHide::-webkit-scrollbar {
         display: none;
       }
@@ -32,6 +44,119 @@
       }
       .el-tree {
         background-color: transparent;
+      }
+      .faultLocation {
+        display: flex;
+        height: 100%;
+        width: 98%;
+        flex-direction: column;
+        margin-left: 10px;
+      }
+      .el-menu-demo {
+        box-shadow: 0 2px 4px #00b1df, 0 0 6px #00b1df;
+        border-radius: 3px;
+        margin-top: 0.5%;
+      }
+      .locaTime {
+        margin-left: 1%;
+        margin-top: 0.5%;
+      }
+      .block {
+        border-radius: 4px;
+        box-shadow: 0 2px 4px #00b1df, 0 0 6px #00b1df;
+        margin-top: 1%;
+        height: 91.5%;
+        display: flex;
+        flex-direction: column;
+      }
+      .block1 {
+        height: 91.5%;
+      }
+      .blockFault {
+        border-radius: 4px;
+        box-shadow: 0 2px 4px #00b1df, 0 0 6px #00b1df;
+        margin-top: 1%;
+        height: 61%;
+        display: flex;
+        flex-direction: column;
+      }
+      .blockFaultInfo {
+        display: flex;
+        height: 34%;
+        width: 98%;
+        flex-direction: column;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px #00b1df, 0 0 6px #00b1df;
+        margin-top: 1%;
+      }
+      .locaTime {
+        align-self: flex-start;
+      }
+      .pic {
+        align-self: center;
+      }
+      .faultLocationInfo {
+        display: flex;
+        flex-direction: row;
+        margin-right: 20%;
+        width: 100%;
+        height: 45%;
+        margin-top: 1%;
+        overflow-x: scroll;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px #00b1df, 0 0 6px #00b1df;
+      }
+      .faultLocationInfoItem {
+        width: 100px;
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .alarmInfo {
+        margin-top: 1%;
+        height: 50%;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px #00b1df, 0 0 6px #00b1df;
+        color: #00b1df;
+      }
+      .el-table--border {
+        border: 1px solid #00b1df;
+      }
+      .el-table--border th {
+        border-right: 1px solid #00b1df;
+      }
+      .el-table th.is-leaf {
+        border-bottom: 1px solid #00b1df;
+      }
+      .el-table::before {
+        height: 0px;
+      }
+      .el-table--border::after {
+        width: 0px;
+        border-left: 1px solid #00b1df;
+      }
+      .cell {
+        color: #00b1df;
+      }
+      .el-table__row .el-table_1_column_6 > div {
+        margin-top: -15px;
+      }
+      .el-table--border tr,
+      td {
+        border-bottom: 1px solid #00b1df !important;
+      }
+      .available in-range {
+        border: none !important;
+      }
+      .el-button--success {
+        background-color: #22ac38;
+        border-color: #22ac38;
+      }
+      .el-select-dropdown__list {
+        display: flex;
+        flex-direction: column;
       }
     </style>
   </head>
@@ -113,7 +238,319 @@
               该部门下暂无该设备
             </p>
           </div>
-          <div v-show="!departId"></div>
+          <div v-show="!departId" class="faultLocation">
+            <div>
+              <el-menu
+                :default-active="activeIndex"
+                class="el-menu-demo"
+                mode="horizontal"
+                @select="handleSelect"
+                background-color="#102d46"
+                text-color="#00b1df"
+                active-text-color="#fff"
+              >
+                <el-menu-item index="1">故障报告</el-menu-item>
+                <el-menu-item index="2">历史故障</el-menu-item>
+                <el-menu-item index="3">在线状态</el-menu-item>
+                <el-menu-item index="4">历史在线状态</el-menu-item>
+              </el-menu>
+            </div>
+            <!-- 故障报告 -->
+            <div class="block1" v-show="activeIndex==1">
+              <div class="blockFault">
+                <div class="locaTime">
+                  <el-date-picker
+                    v-model="value"
+                    align="right"
+                    type="date"
+                    placeholder="请选择日期"
+                    value-format="yyyy-MM-dd"
+                    :picker-options="pickerOptions"
+                  >
+                  </el-date-picker>
+                  <el-select
+                    v-model="value1"
+                    placeholder="请选择部门"
+                    @change="handleDept"
+                  >
+                    <el-option
+                      v-for="item in deptList"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    >
+                    </el-option>
+                  </el-select>
+                  <el-select
+                    v-model="value2"
+                    placeholder="请选择线路"
+                    @change="handleLine"
+                  >
+                    <el-option
+                      v-for="item in lineList"
+                      :label="item.label"
+                      :value="item.value"
+                    >
+                    </el-option>
+                  </el-select>
+                  <el-button
+                    type="primary"
+                    icon="el-icon-search"
+                    @click="getFaultPort"
+                    >搜索</el-button
+                  >
+                </div>
+                <el-button
+                  type="text"
+                  @click="FaultExpDownloadPdf"
+                  style="position: fixed; top: 13.5%; right: 2%"
+                >
+                  <img src="./img/word.png" style="margin-top: -10px" />
+                </el-button>
+                <div
+                  id="l_echarts"
+                  style="height: 550px; width: 100%; margin-top: 20px"
+                  class="pic"
+                ></div>
+              </div>
+              <!-- 故障报告中的详细信息 -->
+              <!-- 报警详情 -->
+              <div id="faultExport" style="height: 38%">
+                <div class="alarmInfo" v-show="isbol">
+                  <div
+                    style="text-align: center; padding-top: 1%; font-size: 23px"
+                  >
+                    报警详情
+                  </div>
+                  <div style="margin-top: 2%; margin-left: 1%">
+                    {{alarmInfo.desc}}
+                  </div>
+                </div>
+                <!-- 杆塔信息 -->
+                <div class="faultLocationInfo" v-show="isbol">
+                  <div
+                    v-for="(items,index) in selectLineList"
+                    class="faultLocationInfoItem"
+                  >
+                    <div v-if="items.sta==1">
+                      <img src="./img/tt红.png" />
+                    </div>
+                    <div v-if="items.sta==0">
+                      <img src="./img/tt绿.png" />
+                    </div>
+                    <div
+                      style="text-align: center; color: #f56c6c; font-size: 8px"
+                      v-if="items.sta==1"
+                    >
+                      {{items.name}}
+                    </div>
+                    <div
+                      style="text-align: center; color: #22ac38; font-size: 8px"
+                      v-if="items.sta==0"
+                    >
+                      {{items.name}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- 历史故障 -->
+            <div v-show="activeIndex==2" class="block">
+              <div style="margin-left: 1%; margin-top: 0.5%">
+                <el-date-picker
+                  v-model="historyFaultValue"
+                  type="daterange"
+                  align="right"
+                  unlink-panels
+                  value-format="yyyy-MM-dd"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  :picker-options="pickerOptions"
+                >
+                </el-date-picker>
+                <el-button
+                  type="primary"
+                  icon="el-icon-search"
+                  @click="getHistoryFault"
+                  >搜索</el-button
+                >
+                <el-button
+                  type="text"
+                  @click="hisFaultExpDownload"
+                  style="margin-left: 68%"
+                >
+                  <img src="./img/word.png" style="margin-top: -5px" />
+                </el-button>
+              </div>
+              <div id="historyFault">
+                <el-table
+                  :data="historyFaultTableData"
+                  border
+                  style="
+                    width: 98%;
+                    margin-top: 10px;
+                    margin-left: 1%;
+                    color: #00b1df;
+                    height: 860px;
+                    overflow: auto;
+                  "
+                >
+                  <el-table-column
+                    prop="date"
+                    label="在线时间"
+                    width="120"
+                    style="color: #00b1df"
+                  >
+                  </el-table-column>
+                  <el-table-column prop="lineName" label="线路名称" width="150">
+                  </el-table-column>
+                  <el-table-column prop="device" label="设备" width="180">
+                  </el-table-column>
+                  <el-table-column
+                    prop="deviceName"
+                    label="设备名称"
+                    width="200"
+                  >
+                  </el-table-column>
+                  <el-table-column prop="desc" label="故障描述" width="700">
+                  </el-table-column>
+                  <el-table-column label="操作">
+                    <template slot-scope="scope">
+                      <el-button
+                        size="mini"
+                        @click="handleHistoryEdit(scope.$index, scope.row)"
+                        >故障详情</el-button
+                      >
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </div>
+            <!-- 在线状态 -->
+            <div v-show="activeIndex==3" class="block">
+              <div style="margin-left: 91%; margin-top: 1%">
+                <el-button
+                  type="text"
+                  @click="onLineFaultExpDownload"
+                  style="margin-left: 47%"
+                >
+                  <img src="./img/word.png" style="margin-top: -10px" />
+                </el-button>
+              </div>
+              <div id="onLinePdf" style="width: 98%; height: 860px">
+                <el-table
+                  :data="tableData"
+                  border
+                  style="
+                    width: 98%;
+                    margin-left: 1%;
+                    color: #00b1df;
+                    height: 860px;
+                    overflow: auto;
+                  "
+                >
+                  <el-table-column prop="date" label="线路创建时间">
+                  </el-table-column>
+                  <el-table-column prop="lineName" label="线路名称">
+                  </el-table-column>
+                  <el-table-column prop="device" label="设备">
+                  </el-table-column>
+                  <el-table-column prop="deviceName" label="设备名称">
+                  </el-table-column>
+                  <el-table-column prop="status" label="设备状态">
+                    <template slot-scope="scope">
+                      <el-button
+                        v-if="scope.row.status==1"
+                        size="mini"
+                        type="success"
+                        @click="handleEdit(scope.$index, scope.row)"
+                        >在线</el-button
+                      >
+                      <el-button
+                        v-if="scope.row.status==0"
+                        size="mini"
+                        type="danger"
+                        @click="handleDelete(scope.$index, scope.row)"
+                        >离线</el-button
+                      >
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </div>
+            <!-- 历史在线状态 -->
+            <div v-show="activeIndex==4" class="block">
+              <div style="margin-left: 1%; margin-top: 0.5%">
+                <el-date-picker
+                  v-model="historyValue"
+                  type="daterange"
+                  align="right"
+                  unlink-panels
+                  value-format="yyyy-MM-dd"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  :picker-options="pickerOptions"
+                >
+                </el-date-picker>
+                <el-button
+                  type="primary"
+                  icon="el-icon-search"
+                  @click="getHistoryStatus"
+                  >搜索</el-button
+                >
+                <el-button
+                  type="text"
+                  @click="hisonLineFaultExpDownload"
+                  style="margin-left: 66%"
+                >
+                  <img src="./img/word.png" style="margin-top: -10px" />
+                </el-button>
+              </div>
+              <div id="hisonlinPdf">
+                <el-table
+                  :data="historyTableData"
+                  border
+                  style="
+                    width: 98%;
+                    margin-top: 1%;
+                    margin-left: 1%;
+                    color: #00b1df;
+                    height: 860px;
+                    overflow: auto;
+                  "
+                >
+                  <el-table-column prop="date" label="在线时间">
+                  </el-table-column>
+                  <el-table-column prop="lineName" label="线路名称">
+                  </el-table-column>
+                  <el-table-column prop="device" label="设备">
+                  </el-table-column>
+                  <el-table-column prop="deviceName" label="设备名称">
+                  </el-table-column>
+                  <el-table-column prop="status" label="设备状态">
+                    <template slot-scope="scope">
+                      <el-button
+                        v-if="scope.row.status"
+                        size="mini"
+                        type="success"
+                        @click="handleEdit(scope.$index, scope.row)"
+                        >在线</el-button
+                      >
+                      <el-button
+                        v-if="!scope.row.status"
+                        size="mini"
+                        type="danger"
+                        @click="handleDelete(scope.$index, scope.row)"
+                        >离线</el-button
+                      >
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -122,8 +559,11 @@
   <script src="./js/jquery.min.js"></script>
   <script src="./js/jquery-1.11.1.js"></script>
   <script src="./js/index.js"></script>
-  <script src="./js/echarts.min.js"></script>
   <script src="./js/clock.js"></script>
+  <script src="./js/FileSaver.js"></script>
+  <script src="./js/jquery.wordexport.js"></script>
+  <script src="./js/print.js"></script>
+  <script src="./js/echarts.min.js"></script>
   <script>
     let electron = require("electron");
     const { ipcRenderer } = electron;
@@ -135,9 +575,54 @@
           children: "child",
           label: "name",
         },
-        departId: true,
+        departId: false,
         getDepartid: "",
         departTreeList: [],
+        pickerOptions: {
+          disabledDate(time) {
+            return time.getTime() > Date.now();
+          },
+          shortcuts: [
+            {
+              text: "今天",
+              onClick(picker) {
+                picker.$emit("pick", new Date());
+              },
+            },
+            {
+              text: "昨天",
+              onClick(picker) {
+                const date = new Date();
+                date.setTime(date.getTime() - 3600 * 1000 * 24);
+                picker.$emit("pick", date);
+              },
+            },
+            {
+              text: "一周前",
+              onClick(picker) {
+                const date = new Date();
+                date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                picker.$emit("pick", date);
+              },
+            },
+          ],
+        },
+        value1: "", //故障报告的部门
+        value2: "", //故障报告的线路
+        value: "", //故障报告的日期
+        historyValue: "",
+        historyFaultValue: "", //历史报警
+        isbol: false,
+        deptList: [],
+        lineList: [],
+        activeIndex: "1",
+        alarmInfo: {}, //存放报警线路信息
+        selectLineList: [], //选择的线路
+        selectLineId: "", //选择的线路id
+        tableData: [],
+        historyTableData: [], //历史在线状态列表
+        historyFaultTableData: [], //历史故障列表
+        myCharts: {}, //用于作图
       },
       created() {
         this.getDepartID();
@@ -152,7 +637,6 @@
         back() {
           ipcRenderer.send("openindex");
         },
-
         getajax(url, data, callback) {
           $.ajax({
             type: "POST",
@@ -167,7 +651,6 @@
         },
 
         handleNodeClick(datas) {
-          // console.log(datas);
           let that = this;
           if (datas.node_type == "DEPARTMENT") {
             let data = {
@@ -193,7 +676,7 @@
               size: 100,
               sort: "desc",
               keyword: "",
-              line_id: "",
+              line_id: datas.line_id,
             };
             $.ajax({
               type: "POST",
@@ -211,7 +694,7 @@
               size: 100,
               sort: "desc",
               keyword: "",
-              tower_id: "1568879795240",
+              tower_id: datas.tower_id,
             };
             $.ajax({
               type: "POST",
@@ -223,12 +706,20 @@
               },
             });
           }
+          if (datas.node_type == "DEVICE") {
+            let val = {
+              deviceSerial: datas.sn,
+              deviceName: datas.name,
+            };
+            ipcRenderer.send("openvideos", val);
+          }
         },
-        // 得到部门的树形数据
+        selectLine() {},
+        //选择部门列表
         getdepart() {
           let that = this;
-
-          let d = that.getDepartid.substr(2, 2);
+          let d = that.getDepartid.split("/");
+          d = d[d.length - 2];
           let data = { pid: +d }; //+隐式转换成number
 
           $.ajax({
@@ -237,17 +728,543 @@
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(data),
             success: function (res) {
-              // console.log(res);
               let data = [];
               data.push(res.data);
               that.departTreeList = data;
-              // console.log(data);
+              if (res.data.child.length == 0) {
+                //故障定位
+                var items = {};
+                items.label = res.data.name;
+                items.value = res.data.dept_id;
+                that.deptList.push(items);
+              } else {
+                //其他部门
+                let bol1, bol2, bol3, bol4;
+                let temp1 = [];
+                let temp2 = [];
+                let temp3 = [];
+                that.deptList = [];
+                res.data.child.forEach((item) => {
+                  if (item.node_type == "DEPARTMENT") {
+                    let items = {};
+                    items.label = item.name;
+                    items.value = item.dept_id;
+                    that.deptList.push(items);
+                  }
+                  if (item.child.length !== 0) {
+                    bol1 = true;
+                  }
+                });
+                if (bol1) {
+                  let res1 = res.data.child; //res1是一个数组
+                  if (res1[0].node_type === "DEPARTMENT") {
+                    that.deptList = [];
+                  }
+                  res1.forEach((item) => {
+                    if (item.node_type == "DEPARTMENT") {
+                      let items = {};
+                      items.label = item.name;
+                      items.value = item.dept_id;
+                      that.deptList.push(items);
+                    }
+                    if (item.child.length !== 0) {
+                      bol2 = true;
+                      temp1.push(item.child);
+                    }
+                  });
+                }
+                if (bol2) {
+                  temp1 = erweiArrToone(temp1);
+                  if (temp1[0].node_type === "DEPARTMENT") {
+                    that.deptList = [];
+                  }
+                  temp1.forEach((item) => {
+                    if (item.node_type == "DEPARTMENT") {
+                      let items = {};
+                      items.label = item.name;
+                      items.value = item.dept_id;
+                      that.deptList.push(items);
+                    }
+                    if (item.child.length !== 0) {
+                      bol3 = true;
+                      temp2.push(item.child);
+                    }
+                  });
+                }
+                if (bol3) {
+                  temp2 = erweiArrToone(temp2);
+                  console.log(temp2);
+                  if (temp1[0].node_type === "DEPARTMENT") {
+                    that.deptList = [];
+                  }
+                  temp2.forEach((item) => {
+                    if (item.node_type == "DEPARTMENT") {
+                      let items = {};
+                      items.label = item.name;
+                      items.value = item.dept_id;
+                      that.deptList.push(items);
+                    }
+                    if (item.child.length !== 0) {
+                      bol4 = true;
+                      temp3.push(item.child);
+                    }
+                  });
+                }
+                function erweiArrToone(arr) {
+                  let arr1 = [];
+                  arr.forEach((item) => {
+                    item.forEach((items) => {
+                      arr1.push(items);
+                    });
+                  });
+                  return arr1;
+                }
+              }
             },
           });
+        },
+        //选择线路列表
+        handleDept(val) {
+          console.log(val);
+          let that = this;
+          let data = {
+            page: 1,
+            size: 100,
+            sort: "desc",
+            keyword: "",
+            dept_id: val,
+          };
+          $.ajax({
+            type: "POST",
+            url: "http://www.cqset.com:8081/api/v2/line/list",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(data),
+            success: function (res) {
+              that.lineList = [];
+              that.value2 = "";
+              res.data.forEach((item, index) => {
+                var items = {};
+                items.label = item.name;
+                items.value = item.line_id;
+                items.desc = item;
+                that.lineList.push(items);
+              });
+            },
+          });
+        },
+        //保存当前选择的线路列表
+        handleLine(val) {
+          this.selectLineId = val;
+          this.selectLineList = [];
+          this.lineList.forEach((item) => {
+            if (item.desc.line_id == val) {
+              this.selectLineList = [
+                ...this.selectLineList,
+                ...item.desc.child,
+              ];
+            }
+          });
+        },
+        handleSelect(key, keyPath) {
+          this.activeIndex = key;
+        },
+        //根据时间和线路查询故障报告并画图表
+        getFaultPort() {
+          let _this = this;
+          if (!this.value) {
+            this.$message.error("请输入时间");
+          } else if (!this.value2) {
+            this.$message.error("请输入线路信息");
+          } else {
+            let data = {
+              date: this.value,
+              line_id: this.value2,
+            };
+            main(data);
+          }
+          async function main(data) {
+            const result = await getLineLightningLog(data);
+            if (!result.data) {
+              _this.$message.error("当前线路在此时间无故障报告图表");
+              if (Object.keys(_this.myCharts).length !== 0) {
+                _this.myCharts.clear();
+              }
+              _this.myCharts = echarts.init(
+                document.getElementById("l_echarts")
+              );
+              var option = {
+                title: {
+                  text: "故障报告",
+                  x: "center",
+                  textStyle: {
+                    //图例文字的样式
+                    color: "#00b1df",
+                    fontSize: 23,
+                  },
+                },
+                tooltip: {
+                  // trigger: "axis"
+                  trigger: "item",
+                },
+                legend: {
+                  data: [],
+                  selected: {},
+                  right: 40,
+                  textStyle: {
+                    //图例文字的样式
+                    color: "#fff",
+                    fontSize: 16,
+                  },
+                },
+                toolbox: {
+                  feature: {
+                    saveAsImage: {},
+                  },
+                },
+                grid: {
+                  left: "3%",
+                  right: "4%",
+                  bottom: "3%",
+                  containLabel: true,
+                },
+                xAxis: {
+                  type: "category",
+                  boundaryGap: false,
+                  data: [],
+                },
+                yAxis: {},
+                series: [],
+              };
+              _this.myCharts.setOption(option);
+            } else {
+              if (Object.keys(_this.myCharts).length !== 0) {
+                _this.myCharts.clear();
+              }
+              _this.myCharts = echarts.init(
+                document.getElementById("l_echarts")
+              );
+              var e_name_data = [];
+              var e_alarm_list = []; //保存报警的信息
+              var time_data;
+              result.data.forEach((item) => {
+                e_name_data.push(item.device_name); //获取所有的设备名字
+                e_alarm_list.push(item.alarm_list);
+                time_data = item.timer_list;
+              });
+              var x_data;
+              var y_data;
+              var power_data;
+              var option = {
+                title: {
+                  text: "故障报告",
+                  x: "center",
+                  textStyle: {
+                    //图例文字的样式
+                    color: "#00b1df",
+                    fontSize: 23,
+                    fontWeight: "normal",
+                  },
+                },
+                tooltip: {
+                  // trigger: "axis"
+                  trigger: "item",
+                },
+                toolbox: {
+                  feature: {
+                    saveAsImage: {},
+                  },
+                },
+                legend: {
+                  data: e_name_data,
+                  selected: {},
+                  right: 40,
+                  textStyle: {
+                    //图例文字的样式
+                    color: "#fff",
+                    fontSize: 16,
+                  },
+                },
+                grid: {
+                  left: "3%",
+                  right: "4%",
+                  bottom: "3%",
+                  containLabel: true,
+                },
+                xAxis: {
+                  type: "category",
+                  boundaryGap: false,
+                  data: time_data,
+                },
+                yAxis: {},
+                series: [],
+              };
+              e_name_data.forEach((item, index) => {
+                var name = item + "";
+                var items = {};
+                option.legend.selected[name] = true;
+                items.name = item + "";
+                items.type = "line";
+                items.stack = item + "";
+                items.data = e_alarm_list[index];
+                items.smooth = true;
+                option.series.push(items);
+              });
+              _this.myCharts.setOption(option);
+              _this.getAlarmList();
+            }
+          }
+          function getLineLightningLog(data) {
+            return new Promise((resolve, reject) => {
+              $.ajax({
+                type: "POST",
+                url: "http://www.cqset.com:8081/api/v2/lightning/line_lightning_log",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(data),
+                success: function (res) {
+                  resolve(res);
+                },
+              });
+            });
+          }
+        },
+        //获取故障报告的描述信息 杆塔距离信息
+        getAlarmList() {
+          let _this = this;
+          this.isbol = true;
+          let data = {
+            date: this.value,
+            depart_id_alter: this.getDepartid,
+          };
+          $.ajax({
+            type: "POST",
+            url: "http://www.cqset.com:8081/api/v2/lightning/lightning_alarm_list",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(data),
+            success: function (res) {
+              res.data.forEach((item, index) => {
+                if (item.line_id == _this.selectLineId) {
+                  for (
+                    let index = 0;
+                    index < _this.selectLineList.length;
+                    index++
+                  ) {
+                    if (
+                      _this.selectLineList[index].name ==
+                        item.TowerA.tower_name ||
+                      _this.selectLineList[index].name == item.TowerB.tower_name
+                    ) {
+                      let item = _this.selectLineList[index];
+                      item.sta = 1;
+                      _this.selectLineList.splice(index, 1, item);
+                    } else {
+                      let item = _this.selectLineList[index];
+                      item.sta = 0;
+                      _this.selectLineList.splice(index, 1, item);
+                    }
+                  }
+                  _this.alarmInfo.desc = item.desc;
+                  _this.alarmInfo.Master = item.Master;
+                  _this.alarmInfo.Second = item.Second;
+                  _this.alarmInfo.towerA = item.TowerA.tower_name;
+                  _this.alarmInfo.towerB = item.TowerB.tower_name;
+                }
+              });
+              _this.$forceUpdate();
+            },
+          });
+        },
+        //请求在线状态页面的表格数据
+        getLightningList() {
+          let _this = this;
+          let data = {
+            depart_id_alter: this.getDepartid,
+          };
+          $.ajax({
+            type: "POST",
+            url: "http://www.cqset.com:8081/api/v2/lightning/list",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(data),
+            success: function (res) {
+              res.data.forEach((item) => {
+                item.device.forEach((items) => {
+                  var data = {};
+                  data.lineName = item.line_name;
+                  data.date = items.created_at.slice(0, 10);
+                  data.device = items.name;
+                  data.deviceName = items.tower_name;
+                  data.status = items.status;
+                  _this.tableData.push(data);
+                });
+              });
+            },
+          });
+        },
+        handleEdit(index, row) {
+          console.log(index, row);
+        },
+        handleDelete(index, row) {
+          console.log(index, row);
+        },
+        //处理历史故障中故障详情按钮
+        handleHistoryEdit(index, row) {
+          //获取塔的信息
+          let data = {
+            page: 1,
+            size: 100,
+            sort: "desc",
+            keyword: "",
+            line_id: row.lineId,
+          };
+          let item = {};
+          let _this = this;
+          console.log(row);
+          item.label = row.lineName;
+          item.value = row.lineId;
+          _this.selectLineList = [];
+          _this.lineList.forEach((item) => {
+            console.log(item);
+          });
+          _this.lineList.push(item);
+          _this.value2 = row.lineId;
+          _this.selectLineId = row.lineId;
+          _this.value = row.date;
+          _this.activeIndex = "1";
+          _this.getFaultPort();
+          $.ajax({
+            type: "POST",
+            url: "http://www.cqset.com:8081/api/v2/towers/list",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(data),
+            success: function (res) {
+              res.data.forEach((item) => {
+                var items = {};
+                items.name = item.name;
+                _this.selectLineList.push(items);
+              });
+            },
+          });
+        },
+        //请求设备历史在线状态数据
+        getHistoryStatus() {
+          this.historyTableData = [];
+          let _this = this;
+          if (!this.historyValue) {
+            this.$message.error("请输入查询的开始和结束时间");
+          } else {
+            let startTime = this.historyValue[0];
+            let endTime = this.historyValue[1];
+            let data = {
+              end_date: endTime,
+              keyword: "",
+              line_id: "",
+              page: 1,
+              size: 100,
+              sort: "desc",
+              start_date: startTime,
+            };
+            $.ajax({
+              type: "POST",
+              url: "http://www.cqset.com:8081/api/v2/lightning/device_online_log",
+              contentType: "application/json; charset=utf-8",
+              data: JSON.stringify(data),
+              success: function (res) {
+                res.data.forEach((item) => {
+                  let data = {};
+                  data.date = item.date;
+                  data.lineName = item.line_name;
+                  data.device = item.device_name;
+                  data.deviceName = item.tower_name;
+                  data.status = item.status;
+                  _this.historyTableData.push(data);
+                });
+              },
+            });
+          }
+        },
+        //获取历史故障列表
+        getHistoryFault() {
+          let _this = this;
+          _this.historyFaultTableData = [];
+          if (!this.historyFaultValue) {
+            this.$message.error("请选择查询时间段");
+          } else {
+            let startTime = this.historyFaultValue[0];
+            let endTime = this.historyFaultValue[1];
+            let data = {
+              end_date: endTime,
+              keyword: "",
+              line_id: "",
+              page: 1,
+              size: 100,
+              sort: "desc",
+              start_date: startTime,
+            };
+            $.ajax({
+              type: "POST",
+              url: "http://www.cqset.com:8081/api/v2/lightning/history_list",
+              contentType: "application/json; charset=utf-8",
+              data: JSON.stringify(data),
+              success: function (res) {
+                console.log(res);
+                res.data.forEach((item) => {
+                  let tableData = {};
+                  tableData.date = item.created_at.slice(0, 10);
+                  tableData.lineName = item.line_name;
+                  tableData.device = item.device_name;
+                  tableData.deviceName =
+                    item.tower_a + "与" + item.tower_b + "间";
+                  tableData.desc = item.desc;
+                  tableData.lineId = item.line_id;
+                  _this.historyFaultTableData.push(tableData);
+                });
+              },
+            });
+          }
+        },
+        hisFaultExpDownload() {
+          let subOutputRankPrint = document.getElementById("historyFault");
+          let newContent = subOutputRankPrint.innerHTML;
+          let oldContent = document.body.innerHTML;
+          document.body.innerHTML = newContent;
+          document.getElementsByTagName("body")[0].style.zoom = 0.47;
+          window.print();
+          window.location.reload();
+          document.body.innerHTML = oldContent;
+        },
+        onLineFaultExpDownload() {
+          let subOutputRankPrint = document.getElementById("onLinePdf");
+          let newContent = subOutputRankPrint.innerHTML;
+          let oldContent = document.body.innerHTML;
+          document.body.innerHTML = newContent;
+          document.getElementsByTagName("body")[0].style.zoom = 0.52;
+          window.print();
+          window.location.reload();
+          document.body.innerHTML = oldContent;
+        },
+        hisonLineFaultExpDownload() {
+          let subOutputRankPrint = document.getElementById("hisonlinPdf");
+          let newContent = subOutputRankPrint.innerHTML;
+          let oldContent = document.body.innerHTML;
+          document.body.innerHTML = newContent;
+          document.getElementsByTagName("body")[0].style.zoom = 0.52;
+          window.print();
+          window.location.reload();
+          document.body.innerHTML = oldContent;
+        },
+        FaultExpDownloadPdf() {
+          let subOutputRankPrint = document.getElementById("faultExport");
+          let newContent = subOutputRankPrint.innerHTML;
+          let oldContent = document.body.innerHTML;
+          document.body.innerHTML = newContent;
+          document.getElementsByTagName("body")[0].style.zoom = 0.32;
+          window.print();
+          window.location.reload();
+          document.body.innerHTML = oldContent;
         },
       },
       mounted() {
         this.getdepart();
+        this.getLightningList();
       },
     });
   </script>

@@ -34,7 +34,7 @@
       .el-tree {
         background-color: transparent;
       }
-</style>
+    </style>
   </head>
 
   <body>
@@ -71,7 +71,6 @@
           <p style="font-size: 26px; color: #00b1df; margin-top: 1%">
             线路信息
           </p>
-          <!-- 线路信息tree列表 -->
           <el-tree
             :data="departTreeList"
             :props="defaultProps"
@@ -183,7 +182,6 @@
         this.getDepartID();
       },
       methods: {
-        //在localStorage里去取出登陆成功返回的部门ID
         getDepartID() {
           this.getDepartid = "";
           let id = JSON.parse(localStorage.getItem("LoginUser"));
@@ -193,7 +191,6 @@
           ipcRenderer.send("openindex");
         },
         open() {
-          // alert("123");
           ipcRenderer.send("openvideos", this.item);
         },
         getajax(url, data, callback) {
@@ -202,7 +199,6 @@
             url: url,
             data: data,
             success: function (res) {
-              //    console.log(res);
               callback(res);
             },
             dataType: "json",
@@ -210,7 +206,6 @@
         },
 
         handleNodeClick(datas) {
-          // console.log(datas);
           let that = this;
           if (datas.node_type == "DEPARTMENT") {
             let data = {
@@ -267,410 +262,19 @@
             });
           }
           if (datas.node_type == "DEVICE") {
-            let data = {
-              sn: datas.sn,
+            let val = {
+              deviceSerial: datas.sn,
+              deviceName: datas.name,
             };
-            $.ajax({
-              type: "POST",
-              url: "http://www.cqset.com:8081/api/v2/device/get_gnss_device",
-              contentType: "application/json; charset=utf-8",
-              data: JSON.stringify(data),
-              success: function (res) {
-                // datas.child = res.data;
-                // console.log(res);
-                if (res.data.gnss_status == 0) {
-                  that.$message({
-                    message: "该设备不在线",
-                    type: "warning",
-                  });
-                } else if (res.data.device_serial_list == "") {
-                  that.$message({
-                    message: "该设备未绑定摄像头",
-                    type: "warning",
-                  });
-                } else {
-                  let deviceSerial = res.data.device_serial_list;
-                  that.item.deviceSerial = deviceSerial;
-                  that.$nextTick(() => {
-                    that.getajax(
-                      "http://www.cqset.com:3100/api/v2/token/accesstoken-get",
-                      {},
-                      function (res) {
-                        var decoder = new EZUIKit.EZUIPlayer({
-                          id: "myplayer",
-                          autoplay: true,
-                          url:
-                            "ezopen://open.ys7.com/" + deviceSerial + "/1.live",
-                          accessToken: res.data.accessToken,
-                          decoderPath: "./js/EZUIKit-JavaScript",
-                          width: 1030,
-                          height: 500,
-                        });
-                      }
-                    );
-                  });
-                  let mounth = new Date().getMonth() + 1;
-                  let mounths = "0" + mounth;
-                  let year = new Date().getFullYear() - 1;
-                  let endTime =
-                    new Date().getFullYear() +
-                    "-" +
-                    mounths +
-                    "-" +
-                    "04" +
-                    " " +
-                    "01" +
-                    ":" +
-                    "01" +
-                    ":" +
-                    "01";
-                  // console.log(startTime);
-                  let startTime =
-                    year +
-                    "-" +
-                    "0" +
-                    new Date().getMonth() +
-                    "-" +
-                    "04" +
-                    " " +
-                    "01" +
-                    ":" +
-                    "01" +
-                    ":" +
-                    "01";
-                  // let datas = {};
-                  // console.log(JSON.stringify(datas));
-                  that.getajax(
-                    "http://www.cqset.com:8081/api/v2/device/gnss_warning_count",
-                    {
-                      gnss_device_name: res.data.gnss_device_name,
-                      start: startTime,
-                      end: endTime,
-                    },
-                    function (res) {
-                      console.log(res);
-                      if (res.data.length == 0) {
-                        that.$message({
-                          message: "暂无告警信息",
-                          type: "warning",
-                        });
-                      } else {
-                        let time = [];
-                        let data = [];
-                        res.data.forEach((item) => {
-                          time.push(item.date);
-                          data.push(item.num);
-                        });
-                        var myCharts = echarts.init(
-                          document.getElementById("t_echarts")
-                        );
-                        var options = {
-                          title: {
-                            text: "告警统计图",
-                            x: "center",
-                            top: 15,
-                            textStyle: {
-                              //图例文字的样式
-                              color: "#00b1df",
-                              fontSize: 23,
-                            },
-                          },
-                          tooltip: {
-                            trigger: "axis",
-                            axisPointer: {
-                              // 坐标轴指示器，坐标轴触发有效
-                              type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
-                            },
-                          },
-                          grid: {
-                            left: "3%",
-                            right: "4%",
-                            bottom: "1%",
-                            containLabel: true,
-                          },
-                          xAxis: {
-                            type: "category",
-                            data: time,
-                          },
-                          yAxis: {
-                            type: "value",
-                            show: false,
-                            splitLine: {
-                              //网格线
-                              show: false,
-                            },
-                          },
-                          series: [
-                            {
-                              data: data,
-                              type: "bar",
-                              barWidth: 20,
-                              itemStyle: {
-                                color: "#00b1df",
-                              },
-                              label: {
-                                show: true,
-                                position: "top",
-                                formatter: "{c}条",
-                                textStyle: {
-                                  color: "#fff",
-                                  fontSize: 12,
-                                },
-                              },
-                            },
-                          ],
-                        };
-                        myCharts.setOption(options);
-                      }
-                    }
-                  );
-                  let name = res.data.gnss_device_name;
-                  let start = Date.parse(new Date()) - 648000000;
-                  let end = Date.parse(new Date());
-                  let x = [];
-                  let y = [];
-                  let z = [];
-                  let x_c = [];
-                  let y_c = [];
-                  let z_c = [];
-                  let time_data = [];
-                  that.getajax(
-
-                    "http://www.cqset.com:3100/api/v1/gnss/gnssData",
-                    {
-                      departID: this.getDepartid,
-                      startDate: start,
-                      endDate: end,
-                      gnssDeviceName: name,
-                    },
-                    function (res) {
-                      // console.log(res);
-                      if (res.msg == "该时间段没有数据") {
-                        that.$message({
-                          message: res.msg,
-                          type: "warning",
-                        });
-                        var myCharts = echarts.init(
-                          document.getElementById("t_echart")
-                        );
-                        var option = {
-                          title: {
-                            text: "GNSS折线图",
-                            x: "center",
-                            top: 30,
-                            textStyle: {
-                              //图例文字的样式
-                              color: "#00b1df",
-                              fontSize: 23,
-                            },
-                          },
-                          legend: {
-                            data: [
-                              "横向形变量",
-                              "纵向形变量",
-                              "垂直形变量",
-                              "横向累加形变量",
-                              "纵向累加形变量",
-                              "垂直累加形变量",
-                            ],
-                            selected: {
-                              线夹C相: true,
-                              线夹B相: true,
-                              线夹A相: true,
-                            },
-                            x: "center",
-                            textStyle: {
-                              //图例文字的样式
-                              color: "#fff",
-                              fontSize: 14,
-                            },
-                          },
-                          xAxis: {
-                            type: "category",
-                            data: time_data,
-                          },
-                          tooltip: {
-                            trigger: "axis",
-                          },
-                          yAxis: {
-                            type: "value",
-                          },
-                          series: [
-                            {
-                              name: "横向形变量",
-                              type: "line",
-                              stack: "横向形变量",
-                              data: x,
-                              smooth: true,
-                            },
-                            {
-                              name: "纵向形变量",
-                              type: "line",
-                              stack: "纵向形变量",
-                              data: y,
-                              smooth: true,
-                            },
-                            {
-                              name: "垂直形变量",
-                              type: "line",
-                              stack: "垂直形变量",
-                              data: z,
-                              smooth: true,
-                            },
-                            {
-                              name: "横向累加形变量",
-                              type: "line",
-                              stack: "横向累加形变量",
-                              data: x_c,
-                              smooth: true,
-                            },
-                            {
-                              name: "纵向累加形变量",
-                              type: "line",
-                              stack: "纵向累加形变量",
-                              data: y_c,
-                              smooth: true,
-                            },
-                            {
-                              name: "垂直累加形变量",
-                              type: "line",
-                              stack: "垂直累加形变量",
-                              data: z_c,
-                              smooth: true,
-                            },
-                          ],
-                        };
-                        myCharts.setOption(option);
-                      } else {
-                        res.data.list.x.forEach((item) => {
-                          x.push(item.data);
-                        });
-                        res.data.list1.y.forEach((item) => {
-                          y.push(item.data);
-                        });
-                        res.data.list2.z.forEach((item) => {
-                          z.push(item.data);
-                        });
-                        res.data.list3.xCumulative.forEach((item) => {
-                          x_c.push(item.data);
-                        });
-                        res.data.list4.yCumulative.forEach((item) => {
-                          y_c.push(item.data);
-                        });
-                        res.data.list5.zCumulative.forEach((item) => {
-                          z_c.push(item.data);
-                        });
-                        res.data.list.x.forEach((item) => {
-                          time_data.push(item.date);
-                        });
-
-                        // console.log(x, y, z, time_data);
-                        var myCharts = echarts.init(
-                          document.getElementById("t_echart")
-                        );
-                        var option = {
-                          title: {
-                            text: "GNSS折线图",
-                            x: "center",
-                            top: 30,
-                            textStyle: {
-                              //图例文字的样式
-                              color: "#00b1df",
-                              fontSize: 23,
-                            },
-                          },
-                          legend: {
-                            data: [
-                              "横向形变量",
-                              "纵向形变量",
-                              "垂直形变量",
-                              "横向累加形变量",
-                              "纵向累加形变量",
-                              "垂直累加形变量",
-                            ],
-                            selected: {
-                              线夹C相: true,
-                              线夹B相: true,
-                              线夹A相: true,
-                            },
-                            x: "center",
-                            textStyle: {
-                              //图例文字的样式
-                              color: "#fff",
-                              fontSize: 14,
-                            },
-                          },
-                          xAxis: {
-                            type: "category",
-                            data: time_data,
-                          },
-                          tooltip: {
-                            trigger: "axis",
-                          },
-                          yAxis: {
-                            type: "value",
-                          },
-                          series: [
-                            {
-                              name: "横向形变量",
-                              type: "line",
-                              stack: "横向形变量",
-                              data: x,
-                              smooth: true,
-                            },
-                            {
-                              name: "纵向形变量",
-                              type: "line",
-                              stack: "纵向形变量",
-                              data: y,
-                              smooth: true,
-                            },
-                            {
-                              name: "垂直形变量",
-                              type: "line",
-                              stack: "垂直形变量",
-                              data: z,
-                              smooth: true,
-                            },
-                            {
-                              name: "横向累加形变量",
-                              type: "line",
-                              stack: "横向累加形变量",
-                              data: x_c,
-                              smooth: true,
-                            },
-                            {
-                              name: "纵向累加形变量",
-                              type: "line",
-                              stack: "纵向累加形变量",
-                              data: y_c,
-                              smooth: true,
-                            },
-                            {
-                              name: "垂直累加形变量",
-                              type: "line",
-                              stack: "垂直累加形变量",
-                              data: z_c,
-                              smooth: true,
-                            },
-                          ],
-                        };
-                        myCharts.setOption(option);
-                      }
-                    }
-                  );
-                }
-              },
-            });
+            ipcRenderer.send("openvideos", val);
           }
-        
         },
 
         getdepart() {
           let that = this;
-
-          let d = that.getDepartid.substr(2, 2);
-          let data = { pid: +d }; //+隐式转换成number
+          let d = that.getDepartid.split("/");
+          d = d[d.length - 2];
+          let data = { pid: +d };
 
           $.ajax({
             type: "POST",
@@ -678,11 +282,9 @@
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(data),
             success: function (res) {
-              // console.log(res);
               let data1 = [];
               data1.push(res.data);
               that.departTreeList = data1;
-              // console.log(data);
             },
           });
         },
